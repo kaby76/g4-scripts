@@ -24,7 +24,7 @@ then
 				not(./parent::lexerElement/ebnfSuffix and count(./lexerAltList/lexerAlt/lexerElements/lexerElement) > 1) and
 				not(./lexerAltList/OR and ../following-sibling::lexerElement) and
 				not(./lexerAltList/OR and ../preceding-sibling::lexerElement) and
-				not(./parent::lexerElement/ebnfSuffix and ./lexerAltList/lexerAlt/lexerElements/lexerElement/lexerAtom/characterRange) and
+(:				not(./parent::lexerElement/ebnfSuffix and ./lexerAltList/lexerAlt/lexerElements/lexerElement/lexerAtom/characterRange) and :)
 				not(count(./lexerAltList/lexerAlt) > 1 and ../../../lexerCommands) and
 				not(./parent::labeledLexerElement/(ASSIGN or PLUS_ASSIGN))
 				]' | trcaret
@@ -67,7 +67,7 @@ else
 						not(./parent::lexerElement/ebnfSuffix and count(./lexerAltList/lexerAlt/lexerElements/lexerElement) > 1) and
 						not(./lexerAltList/OR and ../following-sibling::lexerElement) and
 						not(./lexerAltList/OR and ../preceding-sibling::lexerElement) and
-						not(./parent::lexerElement/ebnfSuffix and ./lexerAltList/lexerAlt/lexerElements/lexerElement/lexerAtom/characterRange) and
+(:						not(./parent::lexerElement/ebnfSuffix and ./lexerAltList/lexerAlt/lexerElements/lexerElement/lexerAtom/characterRange) and :)
 						not(count(./lexerAltList/lexerAlt) > 1 and ../../../lexerCommands) and
 						not(./parent::labeledLexerElement/(ASSIGN or PLUS_ASSIGN))
 						]' | trcaret
