@@ -16,6 +16,7 @@ main() {
 
         for i in `find . -name desc.xml | grep -v Generated\*`
         do
+			echo ""
             echo $i
             d=`dirname $i`
             pushd $d > /dev/null 2>&1
@@ -126,7 +127,7 @@ dochecks_csharp() {
             "void",
             "volatile",
             "while"     
-        ) and not(./parent::identifier/parent::optionValue)]/..' | trcaret
+        ) and not(./parent::identifier/parent::optionValue) and not(./parent::identifier/parent::lexerCommandName)]/..' | trcaret
 }
 
 dochecks_python3() {
@@ -159,7 +160,7 @@ dochecks_python3() {
             "__import__",
             "True", "False", "None",
             "rule", "parserRule"
-        ) and not(./parent::identifier/parent::optionValue)]/..' | trcaret
+        ) and not(./parent::identifier/parent::optionValue) and not(./parent::identifier/parent::lexerCommandName)]/..' | trcaret
     cat o.pt | trxgrep '
         //RULE_REF[text() = (
             "state", "_ctx", "_errHandler", "__syntaxErrors",
@@ -177,7 +178,7 @@ dochecks_python3() {
             "precpred", "inContext", "isExpectedToken", "getExpectedTokens",
             "getExpectedTokensWithinCurrentRule", "getRuleIndex", "getRuleInvocationStack",
             "getDFAStrings", "dumpDFA", "getSourceName", "setTrace"
-        ) and not(./parent::identifier/parent::optionValue)]/..' | trcaret
+        ) and not(./parent::identifier/parent::optionValue) and not(./parent::identifier/parent::lexerCommandName)]/..' | trcaret
 }
 
 dochecks_cpp() {
@@ -200,11 +201,11 @@ dochecks_cpp() {
             "using", "virtual", "void", "volatile", "wchar_t", "while",
             "xor", "xor_eq", 
             "rule", "parserRule"
-        ) and not(./parent::identifier/parent::optionValue)]/..' | trcaret
+        ) and not(./parent::identifier/parent::optionValue) and not(./parent::identifier/parent::lexerCommandName)]/..' | trcaret
     cat o.pt | trxgrep '
         //RULE_REF[text() = (
             "TRUE", "FALSE"
-        ) and not(./parent::identifier/parent::optionValue)]/..' | trcaret
+        ) and not(./parent::identifier/parent::optionValue) and not(./parent::identifier/parent::lexerCommandName)]/..' | trcaret
 }
 
 dochecks_dart() {
@@ -227,7 +228,7 @@ dochecks_dart() {
 			"deferred", "hide", "return", "with",
 			"do", "if", "set", "yield",
 			"rule", "parserRule"
-        ) and not(./parent::identifier/parent::optionValue)]/..' | trcaret
+        ) and not(./parent::identifier/parent::optionValue) and not(./parent::identifier/parent::lexerCommandName)]/..' | trcaret
 }
 
 dochecks_go() {
@@ -265,7 +266,7 @@ dochecks_go() {
 		 : compile. This is a proof of Hyrums law.
 		 :)
 		"start", "stop", "exception"
-        ) and not(./parent::identifier/parent::optionValue)]/..' | trcaret
+        ) and not(./parent::identifier/parent::optionValue) and not(./parent::identifier/parent::lexerCommandName)]/..' | trcaret
 }
 
 dochecks_javascript() {
@@ -287,7 +288,7 @@ dochecks_javascript() {
 
 		(: misc :)
 		"rule", "parserRule"
-        ) and not(./parent::identifier/parent::optionValue)]/..' | trcaret
+        ) and not(./parent::identifier/parent::optionValue) and not(./parent::identifier/parent::lexerCommandName)]/..' | trcaret
 }
 
 
@@ -306,7 +307,7 @@ dochecks_java() {
 
 		(: misc :)
 		"rule", "parserRule"
-        ) and not(./parent::identifier/parent::optionValue)]/..' | trcaret
+        ) and not(./parent::identifier/parent::optionValue) and not(./parent::identifier/parent::lexerCommandName)]/..' | trcaret
 }
 
 dochecks_php() {
@@ -339,7 +340,7 @@ dochecks_php() {
 
 		(: misc :)
 		"rule", "parserRule"
-		) and not(./parent::identifier/parent::optionValue)]/..' | trcaret
+        ) and not(./parent::identifier/parent::optionValue) and not(./parent::identifier/parent::lexerCommandName)]/..' | trcaret
 }
 
 dochecks_typescript() {
@@ -406,7 +407,7 @@ dochecks_typescript() {
 			"with",
 			"yield",
 			"of"
-		) and not(./parent::identifier/parent::optionValue)]/..' | trcaret
+        ) and not(./parent::identifier/parent::optionValue) and not(./parent::identifier/parent::lexerCommandName)]/..' | trcaret
 }
 
 
