@@ -48,7 +48,7 @@ dochecks() {
 dochecks_csharp() {
     echo "CSharp checks..."
     cat o.pt | trxgrep '
-        //RULE_REF[text() = (
+        //(RULE_REF|TOKEN_REF)[text() = (
             "abstract",
             "as",
             "base",
@@ -134,7 +134,7 @@ dochecks_python3() {
     echo "Python3 checks..."
     cat o.pt | trxgrep '
         (: Find all RULE_REF that conflict with Python3 :)
-        //RULE_REF[text() = (
+        //(RULE_REF|TOKEN_REF)[text() = (
             "abs", "all", "and", "any", "apply", "as", "assert",
             "bin", "bool", "break", "buffer", "bytearray",
             "callable", "chr", "class", "classmethod", "coerce", "compile", "complex", "continue",
@@ -162,7 +162,7 @@ dochecks_python3() {
             "rule", "parserRule"
         ) and not(./parent::identifier/parent::optionValue) and not(./parent::identifier/parent::lexerCommandName)]/..' | trcaret
     cat o.pt | trxgrep '
-        //RULE_REF[text() = (
+        //(RULE_REF|TOKEN_REF)[text() = (
             "state", "_ctx", "_errHandler", "__syntaxErrors",
             "setTrace", "_precedenceStack", "_precedenceStack", "_interp",
             "type", "consume", "buildParseTrees",
@@ -184,7 +184,7 @@ dochecks_python3() {
 dochecks_cpp() {
     echo "Cpp checks..."
     cat o.pt | trxgrep '
-        //RULE_REF[text() = (
+        //(RULE_REF|TOKEN_REF)[text() = (
             "alignas", "alignof", "and", "and_eq", "asm", "auto", "bitand",
             "bitor", "bool", "break", "case", "catch", "char", "char16_t",
             "char32_t", "class", "compl", "concept", "const", "constexpr",
@@ -203,7 +203,7 @@ dochecks_cpp() {
             "rule", "parserRule"
         ) and not(./parent::identifier/parent::optionValue) and not(./parent::identifier/parent::lexerCommandName)]/..' | trcaret
     cat o.pt | trxgrep '
-        //RULE_REF[text() = (
+        //(RULE_REF|TOKEN_REF)[text() = (
             "TRUE", "FALSE"
         ) and not(./parent::identifier/parent::optionValue) and not(./parent::identifier/parent::lexerCommandName)]/..' | trcaret
 }
@@ -211,7 +211,7 @@ dochecks_cpp() {
 dochecks_dart() {
     echo "Dart checks..."
     cat o.pt | trxgrep '
-        //RULE_REF[text() = (
+        //(RULE_REF|TOKEN_REF)[text() = (
 			"abstract", "dynamic", "implements", "show",
 			"as", "else", "import", "static",
 			"assert", "enum", "in", "super",
@@ -234,7 +234,7 @@ dochecks_dart() {
 dochecks_go() {
     echo "Go checks..."
     cat o.pt | trxgrep '
-        //RULE_REF[text() = (
+        //(RULE_REF|TOKEN_REF)[text() = (
 		(: keywords :)
 		"break", "default", "func", "interface", "select",
 		"case", "defer", "go", "map", "struct",
@@ -272,7 +272,7 @@ dochecks_go() {
 dochecks_javascript() {
     echo "JavaScript checks..."
     cat o.pt | trxgrep '
-        //RULE_REF[text() = (
+        //(RULE_REF|TOKEN_REF)[text() = (
 
 		(: future reserved :)
 		"enum", "await", "implements", "package", "protected", "static",
@@ -295,7 +295,7 @@ dochecks_javascript() {
 dochecks_java() {
     echo "Java checks..."
     cat o.pt | trxgrep '
-        //RULE_REF[text() = (
+        //(RULE_REF|TOKEN_REF)[text() = (
 		"abstract", "assert", "boolean", "break", "byte", "case", "catch",
 		"char", "class", "const", "continue", "default", "do", "double", "else",
 		"enum", "extends", "false", "final", "finally", "float", "for", "goto",
@@ -313,7 +313,7 @@ dochecks_java() {
 dochecks_php() {
     echo "PHP checks..."
     cat o.pt | trxgrep '
-        //RULE_REF[text() = (
+        //(RULE_REF|TOKEN_REF)[text() = (
 		"abstract", "and", "array", "as",
 		"break",
 		"callable", "case", "catch", "class", "clone", "const", "continue",
@@ -346,7 +346,7 @@ dochecks_php() {
 dochecks_typescript() {
     echo "TypeScript checks..."
     cat o.pt | trxgrep '
-        //RULE_REF[text() = (
+        //(RULE_REF|TOKEN_REF)[text() = (
 			"any",
 			"as",
 			"boolean",
