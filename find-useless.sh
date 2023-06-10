@@ -2,7 +2,7 @@
 main() {
     if [[ $# -gt 0 ]]
     then
-        dotnet trparse -- -l -t ANTLRv4 $@
+        dotnet trparse -- -l -t ANTLRv4 $@ > o.pt
 #        if [ -f o.pt ] && [ -s o.pt ]
 #        then
             compute
@@ -17,7 +17,7 @@ main() {
             then 
 #                dotnet trparse -- -l -t ANTLRv4 *.g4 2> /dev/null > o.pt
 		echo running parser and computing useless parentheses.
-                dotnet trparse -- -l -t ANTLRv4 *.g4
+                dotnet trparse -- -l -t ANTLRv4 *.g4 > o.pt
 #                if [ -f o.pt ] && [ -s o.pt ]
 #                then
                     compute
