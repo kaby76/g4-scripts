@@ -15,12 +15,14 @@ main() {
             pushd $d > /dev/null 2>&1
             if [ ! -z $(find . -maxdepth 1 -name '*.g4' -printf 1 -quit) ]
             then 
-                dotnet trparse -- -l -t ANTLRv4 *.g4 2> /dev/null > o.pt
-                if [ -f o.pt ] && [ -s o.pt ]
-                then
+#                dotnet trparse -- -l -t ANTLRv4 *.g4 2> /dev/null > o.pt
+		echo running parser and computing useless parentheses.
+                dotnet trparse -- -l -t ANTLRv4 *.g4
+#                if [ -f o.pt ] && [ -s o.pt ]
+#                then
                     compute
-                    rm -f o.pt
-                fi
+#                    rm -f o.pt
+#                fi
             fi
             popd > /dev/null 2>&1
         done
