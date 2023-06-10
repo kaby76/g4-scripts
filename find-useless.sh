@@ -2,12 +2,12 @@
 main() {
     if [[ $# -gt 0 ]]
     then
-        dotnet trparse -- -l -t ANTLRv4 $@ 2> /dev/null > o.pt
-        if [ -f o.pt ] && [ -s o.pt ]
-        then
+        dotnet trparse -- -l -t ANTLRv4 $@
+#        if [ -f o.pt ] && [ -s o.pt ]
+#        then
             compute
-            rm -f o.pt
-        fi
+#            rm -f o.pt
+#        fi
     else
         for i in `find . -name desc.xml | grep -v Generated\*`
         do
