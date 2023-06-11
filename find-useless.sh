@@ -16,7 +16,7 @@ main() {
             if [ ! -z $(find . -maxdepth 1 -name '*.g4' -printf 1 -quit) ]
             then 
                 dotnet trparse -- -l -t ANTLRv4 *.g4 > o.pt
-		echo running parser and computing useless parentheses.
+                echo running parser and computing useless parentheses.
                 dotnet trparse -- -l -t ANTLRv4 *.g4 > o.pt
                 if [ -f o.pt ] && [ -s o.pt ]
                 then
@@ -58,12 +58,12 @@ compute() {
             (: except not one of these ... :)
             not(./OR)
             ]' | dotnet trcaret -- -H >> up-output.txt
-	if [ -s up-output.txt ]
-	then
-	    echo Found useless parentheses in grammars...  1>&2
-		cat up-output.txt 1>&2
-	fi
-	rm -f up-output.txt
+    if [ -s up-output.txt ]
+    then
+        echo Found useless parentheses in grammars...  1>&2
+        cat up-output.txt 1>&2
+    fi
+    rm -f up-output.txt
 }
 
 main $@
