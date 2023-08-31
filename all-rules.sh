@@ -1,7 +1,7 @@
 #
 
-echo "Usage: start-symbol grammar-file-name" >2
-echo "Finds the transitive closure of a rule in a parser grammar." >2
+echo "Usage: start-symbol grammar-file-name" >&2
+echo "Finds the transitive closure of a rule in a parser grammar." >&2
 sym=$1
 todo=($sym)
 grammar=$2
