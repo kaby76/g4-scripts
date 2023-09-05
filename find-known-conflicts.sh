@@ -181,6 +181,7 @@ dochecks_cpp() {
     echo "Cpp checks..."
     cat o.pt | trxgrep '
         //(RULE_REF|TOKEN_REF)[text() = (
+		"accept",
             "alignas", "alignof", "and", "and_eq", "asm", "auto", "bitand",
             "bitor", "bool", "break", "case", "catch", "char", "char16_t",
             "char32_t", "class", "compl", "concept", "const", "constexpr",
@@ -208,6 +209,7 @@ dochecks_dart() {
     echo "Dart checks..."
     cat o.pt | trxgrep '
         //(RULE_REF|TOKEN_REF)[text() = (
+		"accept",
             "abstract", "dynamic", "implements", "show",
             "as", "else", "import", "static",
             "assert", "enum", "in", "super",

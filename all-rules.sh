@@ -1,7 +1,11 @@
 #
 
-echo "Usage: start-symbol grammar-file-name" >&2
-echo "Finds the transitive closure of a rule in a parser grammar." >&2
+cat - <<EOF
+Finds the transitive closure of a rule in a parser grammar.
+
+Usage: $0 start-symbol grammar-file-name
+All arguments required.
+EOF
 sym=$1
 todo=($sym)
 grammar=$2

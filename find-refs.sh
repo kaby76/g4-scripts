@@ -1,8 +1,9 @@
 #
 cat - <<EOF
-Usage: $0 symbol-name
+Finds all references (applied and defining) of a symbol.
 
-Finds all references of a symbol.
+Usage: $0 symbol-name
+Arg is optional. If not provided, then all references for all symbols is outputted.
 EOF
 
 if [[ $# -gt 0 ]]
