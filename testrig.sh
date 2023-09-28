@@ -1,6 +1,6 @@
 #
 
-while getopts 'xv:s:' opt; do
+while getopts 'xv:s:g:' opt; do
     case "$opt" in
     v)
         v="${OPTARG}"
@@ -8,6 +8,9 @@ while getopts 'xv:s:' opt; do
         ;;
     s)
         start="${OPTARG}"
+        ;;
+    g)
+        grammar="${OPTARG}"
         ;;
     x)
         set -x
@@ -18,18 +21,21 @@ NAME
        testrig - test Antlr4 grammars using org.antlr.v4.gui.TestRig
 
 SYNOPSIS
-       $(basename $0) ([-v ...])
+       $(basename $0) ([-g ... | -s ... | -v ... | -x ])* [test-file]
 
 DESCRIPTION
        Tests Antlr4 grammars. Assumes a standardized grammar start rule, combined
        or split grammar, no preprocessor grammars.
 
 OPTIONS
+    -g
+        Specifies the grammar name. For split grammar, do not include "Parser" in the
+        name. Do not include ".g4" in the name.
+    -s
+        Specifies the start rule if the script cannot find the correct start rule.
     -v
         Specifies the Antlr version, e.g., "4.12.0". Without the option, the latest
         is used.
-    -s
-        Specifies the start rule if the script cannot find the correct start rule.
     -x
         Execute "set -x" to debug script.
 EOF
@@ -100,17 +106,20 @@ if [ "$start" == "" ]
 then
     start=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
     if [ ${#start[@]} -ne 1 ]; then
-        echo "Start rule ambiguous: ${start[@]}"
+        echo "Start rule cannot be determined. ${start[@]}"
         exit 1
     fi
 fi
 echo "Start $start"
 
 # Get grammar name.
-grammar=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()' | sed "s/Parser$//"`)
-if [ ${#grammar[@]} -ne 1 ]; then
-    echo "Start rule ambiguous: ${start[@]}"
-    exit 1
+if [ "$grammar" == "" ]
+then
+    grammar=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()' | sed "s/Parser$//"`)
+    if [ ${#grammar[@]} -ne 1 ]; then
+        echo "Grammar name cannot be determined. ${start[@]}"
+        exit 1
+    fi
 fi
 echo "Grammar $grammar"
 
@@ -118,8 +127,8 @@ echo "Grammar $grammar"
 antlr4 $vv *.g4
 if [ $? -ne 0 ]
 then
-	echo antlr4 failed.
-	exit 1
+    echo antlr4 failed.
+    exit 1
 fi
 
 unameOut="$(uname -s)"
@@ -135,10 +144,10 @@ esac
 if [[ "$machine" == "MinGw" || "$machine" == "Msys" ]]
 then
     m2=$USERPROFILE/.m2
-	sep=";"
+    sep=";"
 else
     m2=~/.m2
-	sep=":"
+    sep=":"
 fi
 
 # Find Antlr jar.
