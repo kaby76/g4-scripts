@@ -25,7 +25,7 @@ DESCRIPTION
        or split grammar, no preprocessor grammars.
 
 OPTIONS
-   -v
+    -v
         Specifies the Antlr version, e.g., "4.12.0". Without the option, the latest
         is used.
     -s
@@ -40,36 +40,62 @@ done
 shift $((OPTIND - 1))
 files="$@"
 
-# Assume JavaSDK installed.
+# git must be installed.
+# This is needed to clean up the mess created by this script.
+command -v git
+if [ $? -eq 1 ]; then
+    echo git not installed.
+    exit 1
+fi
+
+# JavaSDK must be installed.
+# We cannot compile and run a Java program without it.
 command -v javac
 if [ $? -eq 1 ]; then
     echo JavaSDK not installed.
     exit 1
 fi
-java=java
-javac=javac
 
-# Assume antlr4 tool installed.
+# antlr4 tool must be installed.
+# We use the antlr4-tools to run the Antlr4 tool,
+# and referemce on executing the java program.
 command -v antlr4
 if [ $? -eq 1 ]; then
     echo antlr4-tools not installed.
     exit 1
 fi
 
-# Get current version of Antlr.
-v=`antlr4 | grep 'ANTLR Parser Generator  Version' | awk '{print $5}'`
-
-# Assume dotnet installed.
+# dotnet must be installed.
+# We need the Trash toolkit to extract the
+# start rule and grammar name from the grammar.
 command -v dotnet
 if [ $? -eq 1 ]; then
     echo dotnet sdk not installed.
     exit 1
 fi
 
+#
+java=java
+javac=javac
+
+# Get current version of Antlr.
+if [ "$v" == "" ]
+then
+    v=`antlr4 | grep 'ANTLR Parser Generator  Version' | awk '{print $5}'`
+    vv="-v $v"
+fi
+
 # Assume this is in a cloned grammars-v4 repo.
 # Get local Trash toolkit tools.
 dotnet tool restore 1> /dev/null
-# Get start symbol and grammar name.
+if [ $? -ne 0 ]
+then
+    echo Trash toolkit restore is not working.
+    dotnet tool restore
+    exit 1
+fi
+
+# Get start symbol.
 if [ "$start" == "" ]
 then
     start=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
@@ -78,8 +104,15 @@ then
         exit 1
     fi
 fi
-grammar=`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()' | sed "s/Parser$//"`
 echo "Start $start"
+
+# Get grammar name.
+grammar=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()' | sed "s/Parser$//"`)
+if [ ${#grammar[@]} -ne 1 ]; then
+    echo "Start rule ambiguous: ${start[@]}"
+    exit 1
+fi
+
 echo "Grammar $grammar"
 antlr4 $vv *.g4
 unameOut="$(uname -s)"
