@@ -6,7 +6,7 @@ This repo contains some useful [Trash](https://github.com/kaby76/Domemtech.Trash
 * [testrig.sh](https://github.com/kaby76/g4-checks/blob/main/testrig.sh) -- Runs the org.antlr.v4.gui.TestRig program on an input file.
 * [find-cover.sh](https://github.com/kaby76/g4-checks/blob/main/find-cover.sh) -- Generate cover.html.
 
-### "Grammar lints"
+### Grammar linting
 * [find-useless.sh](https://github.com/kaby76/g4-checks/blob/main/find-useless.sh) -- Find useless parentheses. 
 * [unused.sh](https://github.com/kaby76/g4-checks/blob/main/unused.sh) -- Find unused parser symbols.
 * [unused-lexer.sh](https://github.com/kaby76/g4-checks/blob/main/unused-lexer.sh) -- Find unused lexer symbols. 
