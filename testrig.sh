@@ -101,27 +101,30 @@ then
     exit 1
 fi
 
-# Get start symbol.
+# Get grammar name.
+if [ "$grammar" == "" ]
+then
+    grammar=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()' | sed "s/Parser$//"`)
+    if [ ${#grammar[@]} -ne 1 ]; then
+        echo "Grammar name cannot be determined. ${grammar[@]}"
+        exit 1
+    fi
+fi
+echo "Grammar $grammar"
+
+# Get start symbol. The grammar helps disambiguate the start rule to
+# choose.
 if [ "$start" == "" ]
 then
-    start=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
+    start=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- '
+    /grammarSpec[grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text() = "'$grammar'"]
+        //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
     if [ ${#start[@]} -ne 1 ]; then
         echo "Start rule cannot be determined. ${start[@]}"
         exit 1
     fi
 fi
 echo "Start $start"
-
-# Get grammar name.
-if [ "$grammar" == "" ]
-then
-    grammar=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()' | sed "s/Parser$//"`)
-    if [ ${#grammar[@]} -ne 1 ]; then
-        echo "Grammar name cannot be determined. ${start[@]}"
-        exit 1
-    fi
-fi
-echo "Grammar $grammar"
 
 # Generate parser and lexer from grammars.
 antlr4 $vv *.g4
