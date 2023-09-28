@@ -2,18 +2,18 @@
 
 while getopts 'xv:s:' opt; do
     case "$opt" in
-        v)
-            v="${OPTARG}"
-	    vv="-v $v"
-            ;;
-	s)
-	    start="${OPTARG}"
-	    ;;
-	x)
-	    set -x
-	    ;;
-        ?|h)
-            cat - <<EOF
+    v)
+        v="${OPTARG}"
+        vv="-v $v"
+        ;;
+    s)
+        start="${OPTARG}"
+        ;;
+    x)
+        set -x
+        ;;
+    ?|h)
+        cat - <<EOF
 NAME
        testrig - test Antlr4 grammars using org.antlr.v4.gui.TestRig
 
@@ -30,9 +30,11 @@ OPTIONS
         is used.
     -s
         Specifies the start rule if the script cannot find the correct start rule.
+    -x
+        Execute "set -x" to debug script.
 EOF
-            exit 0
-            ;;
+        exit 0
+        ;;
     esac
 done
 shift $((OPTIND - 1))
@@ -72,9 +74,9 @@ if [ "$start" == "" ]
 then
     start=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
     if [ ${#start[@]} -ne 1 ]; then
-		echo "Start rule ambiguous: ${start[@]}"
-	    exit 1
-	fi
+        echo "Start rule ambiguous: ${start[@]}"
+        exit 1
+    fi
 fi
 grammar=`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()' | sed "s/Parser$//"`
 echo "Start $start"
