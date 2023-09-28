@@ -112,9 +112,16 @@ if [ ${#grammar[@]} -ne 1 ]; then
     echo "Start rule ambiguous: ${start[@]}"
     exit 1
 fi
-
 echo "Grammar $grammar"
+
+# Generate parser and lexer from grammars.
 antlr4 $vv *.g4
+if [ $? -ne 0 ]
+then
+	echo antlr4 failed.
+	exit 1
+fi
+
 unameOut="$(uname -s)"
 case "${unameOut}" in
     Linux*)     machine=Linux;;
@@ -123,16 +130,21 @@ case "${unameOut}" in
     MINGW*)     machine=MinGw;;
     *)          machine="UNKNOWN:${unameOut}"
 esac
+
 # Set up m2 directory, which is where Antlr jar will be.
 if [[ "$machine" == "MinGw" || "$machine" == "Msys" ]]
 then
     m2=$USERPROFILE/.m2
+	sep=";"
 else
     m2=~/.m2
+	sep=":"
 fi
+
 # Find Antlr jar.
 a=`find $m2 -name '*-complete.jar' | fgrep "/$v/"`
 echo "Antlr $a"
+
 # Add Java sources if the Java directory is present.
 if [ -d Java ]
 then
@@ -140,10 +152,13 @@ then
 else
     morejava=""
 fi
+
 # Compile.
-$javac -cp ".;$a" *.java $morejava
+$javac -cp ".$sep$a" *.java $morejava
+
 # Test.
-$java -cp ".;$a;Java/" org.antlr.v4.gui.TestRig $grammar $start -gui -tree $files
+$java -cp ".$sep$a$sepJava/" org.antlr.v4.gui.TestRig $grammar $start -gui -tree $files
+
 # Clean up.
 git clean -f .
 rm -f *.tokens
