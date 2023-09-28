@@ -1,28 +1,17 @@
 #
-# Assume JavaSDK installed.
-command -v java
-if [ $? -eq 1 ]; then
-    echo java not installed.
-    exit 1
-fi
-java=java
-javac=javac
 
-# Assume antlr4 tool installed.
-command -v antlr4
-if [ $? -eq 1 ]; then
-    echo antlr4-tools not installed.
-    exit 1
-fi
-# Get current version.
-v=`antlr4 | grep 'ANTLR Parser Generator  Version' | awk '{print $5}'`
-#
-while getopts 'v:' opt; do
+while getopts 'xv:s:' opt; do
     case "$opt" in
         v)
             v="${OPTARG}"
 	    vv="-v $v"
             ;;
+	s)
+	    start="${OPTARG}"
+	    ;;
+	x)
+	    set -x
+	    ;;
         ?|h)
             cat - <<EOF
 NAME
@@ -36,9 +25,11 @@ DESCRIPTION
        or split grammar, no preprocessor grammars.
 
 OPTIONS
-       -v
-           Specifies the Antlr version, e.g., "4.12.0". Without the option, the latest
-	   is used.
+   -v
+        Specifies the Antlr version, e.g., "4.12.0". Without the option, the latest
+        is used.
+    -s
+        Specifies the start rule if the script cannot find the correct start rule.
 EOF
             exit 0
             ;;
@@ -47,17 +38,44 @@ done
 shift $((OPTIND - 1))
 files="$@"
 
+# Assume JavaSDK installed.
+command -v javac
+if [ $? -eq 1 ]; then
+    echo JavaSDK not installed.
+    exit 1
+fi
+java=java
+javac=javac
+
+# Assume antlr4 tool installed.
+command -v antlr4
+if [ $? -eq 1 ]; then
+    echo antlr4-tools not installed.
+    exit 1
+fi
+
+# Get current version of Antlr.
+v=`antlr4 | grep 'ANTLR Parser Generator  Version' | awk '{print $5}'`
+
 # Assume dotnet installed.
 command -v dotnet
 if [ $? -eq 1 ]; then
     echo dotnet sdk not installed.
     exit 1
 fi
+
 # Assume this is in a cloned grammars-v4 repo.
 # Get local Trash toolkit tools.
 dotnet tool restore 1> /dev/null
 # Get start symbol and grammar name.
-start=`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()'`
+if [ "$start" == "" ]
+then
+    start=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
+    if [ ${#start[@]} -ne 1 ]; then
+		echo "Start rule ambiguous: ${start[@]}"
+	    exit 1
+	fi
+fi
 grammar=`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()' | sed "s/Parser$//"`
 echo "Start $start"
 echo "Grammar $grammar"
