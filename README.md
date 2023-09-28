@@ -3,7 +3,7 @@
 This repo contains some useful [Trash](https://github.com/kaby76/Domemtech.Trash) scripts.
 
 ### Testing
-* testrig.sh -- runs the org.antlr.v4.gui.TestRig program on an input file.
+* [testrig.sh](https://github.com/kaby76/g4-checks/blob/main/testrig.sh) -- Runs the org.antlr.v4.gui.TestRig program on an input file.
 * [find-cover.sh](https://github.com/kaby76/g4-checks/blob/main/find-cover.sh) -- Generate cover.html.
 
 ### "Grammar lints"
