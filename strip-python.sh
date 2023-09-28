@@ -6,8 +6,10 @@ trquery '
 	delete //rule_[rulename/name/NAME[contains(text(),"invalid_") or contains(text(),"expression_without_invalid")]];
 	delete //rule_[rulename/name/NAME[contains(text(),"invalid_") or contains(text(),"expression_without_invalid")]];
 	delete //action;
-	replace //attribute " ";
-	replace //attribute_name " ";
+(:	replace //attribute " ";
+	replace //attribute_name " "; :)
+	delete //attribute;
+	delete //attribute_name;
 	delete //lookahead[AMPER];
 	delete //memoflag;
 	delete //forced_atom/AMPER;
