@@ -126,14 +126,15 @@ if [ "$grammar" == "" ]
 then
 	if [ $local_kit -eq 1 ]
 	then
-	    grammar=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()' | sed "s/Parser$//"`)
+	    grammar_before_mod=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()'`)
 	else
-	    grammar=(`trparse *.g4 2> /dev/null | trxgrep ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()' | sed "s/Parser$//"`)
+	    grammar_before_mod=(`trparse *.g4 2> /dev/null | trxgrep ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()'`)
 	fi
-    if [ ${#grammar[@]} -ne 1 ]; then
+    if [ ${#grammar_before_mod[@]} -ne 1 ]; then
         echo "Grammar name cannot be determined. ${grammar[@]}"
         exit 1
     fi
+	grammar=`echo -n $grammar_before_mod | sed 's/Parser$//'`
 fi
 echo "Grammar $grammar"
 
@@ -144,11 +145,11 @@ then
 	if [ $local_kit -eq 1 ]
 	then
 	    start=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- '
-		    /grammarSpec[grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text() = "'$grammar'"]
+		    /grammarSpec[grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text() = "'$grammar_before_mod'"]
 	        //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
 	else
 	    start=(`trparse *.g4 2> /dev/null | trxgrep '
-		    /grammarSpec[grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text() = "'$grammar'"]
+		    /grammarSpec[grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text() = "'$grammar_before_mod'"]
 	        //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
 	fi
     if [ ${#start[@]} -ne 1 ]; then
