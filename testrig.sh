@@ -25,7 +25,10 @@ SYNOPSIS
 
 DESCRIPTION
        Tests Antlr4 grammars. Assumes a standardized grammar start rule, combined
-       or split grammar, no preprocessor grammars.
+       or split grammar, no preprocessor grammars. This script must be run under
+	   Linux Bash or Windows MSYS2 Bash. Requirements: dotnet, git, bash, JavaSDK,
+	   antlr4-tools. If the grammar is not in a clone of https://github.com/antlr/grammars-v4
+	   then the Trash toolkit will also need to be installed.
 
 OPTIONS
     -g
@@ -90,8 +93,8 @@ fi
 # a global install of the Trash toolkit. Let's test on
 # how to call the toolkit.
 local_kit=1
-dotnet tool restore 1> /dev/null
-if [ $? -ne 0 ]
+dotnet tool restore | grep 'Cannot find a manifest file'
+if [ $? -ne 1 ]
 then
 	# Try global Trash toolkit.
 	command -v trparse
