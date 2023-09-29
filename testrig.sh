@@ -82,8 +82,13 @@ if [ $? -eq 1 ]; then
     assumptions_failed=1
 fi
 
-# Assume this is in a cloned grammars-v4 repo.
-# Get local Trash toolkit tools.
+# Ideally, this grammar is in a clone of
+# https://github.com/antlr/grammars-v4. That is because
+# the Trash toolkit is installed locally, and there would
+# be nothing more to install. But, we'd like to handle
+# grammars outside this structure. In that case, we'd need
+# a global install of the Trash toolkit. Let's test on
+# how to call the toolkit.
 local_kit=1
 dotnet tool restore 1> /dev/null
 if [ $? -ne 0 ]
