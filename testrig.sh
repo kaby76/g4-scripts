@@ -202,7 +202,7 @@ fi
 $javac -cp ".$sep$a" *.java $morejava
 
 # Test.
-$java -cp ".$sep$a$sepJava/" org.antlr.v4.gui.TestRig $grammar $start -gui -tree $files
+$java -cp ".$sep$a""$sep""Java/" org.antlr.v4.gui.TestRig $grammar $start -gui -tree $files
 
 # Clean up.
 git clean -f .
