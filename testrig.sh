@@ -46,12 +46,14 @@ done
 shift $((OPTIND - 1))
 files="$@"
 
+assumptions_failed=0
+
 # git must be installed.
 # This is needed to clean up the mess created by this script.
 command -v git
 if [ $? -eq 1 ]; then
     echo git not installed.
-    exit 1
+    assumptions_failed=1
 fi
 
 # JavaSDK must be installed.
@@ -59,7 +61,7 @@ fi
 command -v javac
 if [ $? -eq 1 ]; then
     echo JavaSDK not installed.
-    exit 1
+    assumptions_failed=1
 fi
 
 # antlr4 tool must be installed.
@@ -68,7 +70,7 @@ fi
 command -v antlr4
 if [ $? -eq 1 ]; then
     echo antlr4-tools not installed.
-    exit 1
+    assumptions_failed=1
 fi
 
 # dotnet must be installed.
@@ -77,6 +79,34 @@ fi
 command -v dotnet
 if [ $? -eq 1 ]; then
     echo dotnet sdk not installed.
+    assumptions_failed=1
+fi
+
+# Assume this is in a cloned grammars-v4 repo.
+# Get local Trash toolkit tools.
+local_kit=1
+dotnet tool restore 1> /dev/null
+if [ $? -ne 0 ]
+then
+	# Try global Trash toolkit.
+	command -v trparse
+	if [ $? -ne 0 ]
+	then
+		echo "You do not have a local cache tool .config directory"
+		echo "and neither a global cache of the Trash toolkit."
+		echo "You can install the local cache by copying"
+		echo "https://github.com/antlr/grammars-v4/tree/master/.config here"
+		echo "or installing the Trash toolkit globally,"
+		echo "https://github.com/kaby76/Domemtech.Trash#installation"
+		echo "then trying this over."
+	    assumptions_failed=1
+	else
+		local_kit=0
+	fi
+fi
+
+if [ $assumptions_failed -eq 1 ]
+then
     exit 1
 fi
 
@@ -91,20 +121,15 @@ then
     vv="-v $v"
 fi
 
-# Assume this is in a cloned grammars-v4 repo.
-# Get local Trash toolkit tools.
-dotnet tool restore 1> /dev/null
-if [ $? -ne 0 ]
-then
-    echo Trash toolkit restore is not working.
-    dotnet tool restore
-    exit 1
-fi
-
 # Get grammar name.
 if [ "$grammar" == "" ]
 then
-    grammar=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()' | sed "s/Parser$//"`)
+	if [ $local_kit -eq 1 ]
+	then
+	    grammar=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()' | sed "s/Parser$//"`)
+	else
+	    grammar=(`trparse *.g4 2> /dev/null | trxgrep ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()' | sed "s/Parser$//"`)
+	fi
     if [ ${#grammar[@]} -ne 1 ]; then
         echo "Grammar name cannot be determined. ${grammar[@]}"
         exit 1
@@ -116,9 +141,16 @@ echo "Grammar $grammar"
 # choose.
 if [ "$start" == "" ]
 then
-    start=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- '
-    /grammarSpec[grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text() = "'$grammar'"]
-        //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
+	if [ $local_kit -eq 1 ]
+	then
+	    start=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- '
+		    /grammarSpec[grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text() = "'$grammar'"]
+	        //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
+	else
+	    start=(`trparse *.g4 2> /dev/null | trxgrep '
+		    /grammarSpec[grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text() = "'$grammar'"]
+	        //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
+	fi
     if [ ${#start[@]} -ne 1 ]; then
         echo "Start rule cannot be determined. ${start[@]}"
         exit 1
@@ -173,4 +205,5 @@ $java -cp ".$sep$a$sepJava/" org.antlr.v4.gui.TestRig $grammar $start -gui -tree
 
 # Clean up.
 git clean -f .
-rm -f *.tokens
+rm -f *.tokens *.class *.interp
+rm -f `antlr4 -depend *.g4 | awk '{print $1}'`
