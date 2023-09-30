@@ -2,15 +2,15 @@
 
 while getopts 'xv:s:g:' opt; do
     case "$opt" in
-    v)
-        v="${OPTARG}"
-        vv="-v $v"
+    g)
+        grammar="${OPTARG}"
         ;;
     s)
         start="${OPTARG}"
         ;;
-    g)
-        grammar="${OPTARG}"
+    v)
+        v="${OPTARG}"
+        vv="-v $v"
         ;;
     x)
         set -x
@@ -26,14 +26,17 @@ SYNOPSIS
 DESCRIPTION
        Tests Antlr4 grammars. Assumes a standardized grammar start rule, combined
        or split grammar, no preprocessor grammars. This script must be run under
-       Linux Bash or Windows MSYS2 Bash. Requirements: dotnet, git, bash, JavaSDK,
-       antlr4-tools. If the grammar is not in a clone of https://github.com/antlr/grammars-v4
-       then the Trash toolkit will also need to be installed.
+       Linux Bash or Windows MSYS2 Bash or . Requirements: dotnet, git, bash, OpenJDK,
+       Python3, antlr4-tools. If the grammar is not in a clone of
+       https://github.com/antlr/grammars-v4 then the Trash toolkit will also need to
+       be installed. https://github.com/kaby76/Domemtech.Trash#installation
 
 OPTIONS
     -g
         Specifies the grammar name. For split grammar, do not include "Parser" in the
         name. Do not include ".g4" in the name.
+    -h
+        Output this help message.
     -s
         Specifies the start rule if the script cannot find the correct start rule.
     -v
@@ -41,6 +44,14 @@ OPTIONS
         is used.
     -x
         Execute "set -x" to debug script.
+
+EXAMPLE USAGE
+    git clone https://github.com/antlr/grammars-v4.git
+    cd grammars-v4/abb
+    testrig examples/robdata.sys
+    cd ../java/java20
+    cat examples/helloworld.java | testrig
+
 EOF
         exit 0
         ;;
@@ -55,15 +66,24 @@ assumptions_failed=0
 # This is needed to clean up the mess created by this script.
 command -v git
 if [ $? -eq 1 ]; then
-    echo git not installed.
+    echo "git not installed. https://git-scm.com/"
     assumptions_failed=1
 fi
 
-# JavaSDK must be installed.
-# We cannot compile and run a Java program without it.
-command -v javac
+# git must be installed.
+# This is needed to clean up the mess created by this script.
+command -v git
 if [ $? -eq 1 ]; then
-    echo JavaSDK not installed.
+    echo "git not installed. https://git-scm.com/"
+    assumptions_failed=1
+fi
+
+# Python must be installed.
+# It's required for antlr4 of the antlr4-tools, but we'll
+# test it here anyway.
+command -v python
+if [ $? -eq 1 ]; then
+    echo "Python is required."
     assumptions_failed=1
 fi
 
@@ -72,7 +92,7 @@ fi
 # and referemce on executing the java program.
 command -v antlr4
 if [ $? -eq 1 ]; then
-    echo antlr4-tools not installed.
+    echo "antlr4-tools not installed. https://github.com/antlr/antlr4-tools"
     assumptions_failed=1
 fi
 
@@ -81,7 +101,7 @@ fi
 # start rule and grammar name from the grammar.
 command -v dotnet
 if [ $? -eq 1 ]; then
-    echo dotnet sdk not installed.
+    echo "dotnet sdk not installed. https://dotnet.microsoft.com/en-us/"
     assumptions_failed=1
 fi
 
@@ -100,13 +120,15 @@ then
     command -v trparse
     if [ $? -ne 0 ]
     then
-        echo "You do not have a local cache tool .config directory"
-        echo "and neither a global cache of the Trash toolkit."
-        echo "You can install the local cache by copying"
-        echo "https://github.com/antlr/grammars-v4/tree/master/.config here"
-        echo "or installing the Trash toolkit globally,"
-        echo "https://github.com/kaby76/Domemtech.Trash#installation"
-        echo "then trying this over."
+        cat - <<EOF
+You do not have a local cache tool .config directory
+and neither a global cache of the Trash toolkit.
+You can install the local cache by copying
+https://github.com/antlr/grammars-v4/tree/master/.config here
+or installing the Trash toolkit globally,
+https://github.com/kaby76/Domemtech.Trash#installation
+then trying this over.
+EOF
         assumptions_failed=1
     else
         local_kit=0
