@@ -26,9 +26,9 @@ SYNOPSIS
 DESCRIPTION
        Tests Antlr4 grammars. Assumes a standardized grammar start rule, combined
        or split grammar, no preprocessor grammars. This script must be run under
-	   Linux Bash or Windows MSYS2 Bash. Requirements: dotnet, git, bash, JavaSDK,
-	   antlr4-tools. If the grammar is not in a clone of https://github.com/antlr/grammars-v4
-	   then the Trash toolkit will also need to be installed.
+       Linux Bash or Windows MSYS2 Bash. Requirements: dotnet, git, bash, JavaSDK,
+       antlr4-tools. If the grammar is not in a clone of https://github.com/antlr/grammars-v4
+       then the Trash toolkit will also need to be installed.
 
 OPTIONS
     -g
@@ -96,21 +96,21 @@ local_kit=1
 dotnet tool restore | grep 'Cannot find a manifest file'
 if [ $? -ne 1 ]
 then
-	# Try global Trash toolkit.
-	command -v trparse
-	if [ $? -ne 0 ]
-	then
-		echo "You do not have a local cache tool .config directory"
-		echo "and neither a global cache of the Trash toolkit."
-		echo "You can install the local cache by copying"
-		echo "https://github.com/antlr/grammars-v4/tree/master/.config here"
-		echo "or installing the Trash toolkit globally,"
-		echo "https://github.com/kaby76/Domemtech.Trash#installation"
-		echo "then trying this over."
-	    assumptions_failed=1
-	else
-		local_kit=0
-	fi
+    # Try global Trash toolkit.
+    command -v trparse
+    if [ $? -ne 0 ]
+    then
+        echo "You do not have a local cache tool .config directory"
+        echo "and neither a global cache of the Trash toolkit."
+        echo "You can install the local cache by copying"
+        echo "https://github.com/antlr/grammars-v4/tree/master/.config here"
+        echo "or installing the Trash toolkit globally,"
+        echo "https://github.com/kaby76/Domemtech.Trash#installation"
+        echo "then trying this over."
+        assumptions_failed=1
+    else
+        local_kit=0
+    fi
 fi
 
 if [ $assumptions_failed -eq 1 ]
@@ -132,17 +132,17 @@ fi
 # Get grammar name.
 if [ "$grammar" == "" ]
 then
-	if [ $local_kit -eq 1 ]
-	then
-	    grammar_before_mod=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()'`)
-	else
-	    grammar_before_mod=(`trparse *.g4 2> /dev/null | trxgrep ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()'`)
-	fi
+    if [ $local_kit -eq 1 ]
+    then
+        grammar_before_mod=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()'`)
+    else
+        grammar_before_mod=(`trparse *.g4 2> /dev/null | trxgrep ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()'`)
+    fi
     if [ ${#grammar_before_mod[@]} -ne 1 ]; then
         echo "Grammar name cannot be determined. ${grammar[@]}"
         exit 1
     fi
-	grammar=`echo -n $grammar_before_mod | sed 's/Parser$//'`
+    grammar=`echo -n $grammar_before_mod | sed 's/Parser$//'`
 fi
 echo "Grammar $grammar"
 
@@ -150,16 +150,16 @@ echo "Grammar $grammar"
 # choose.
 if [ "$start" == "" ]
 then
-	if [ $local_kit -eq 1 ]
-	then
-	    start=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- '
-		    /grammarSpec[grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text() = "'$grammar_before_mod'"]
-	        //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
-	else
-	    start=(`trparse *.g4 2> /dev/null | trxgrep '
-		    /grammarSpec[grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text() = "'$grammar_before_mod'"]
-	        //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
-	fi
+    if [ $local_kit -eq 1 ]
+    then
+        start=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- '
+            /grammarSpec[grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text() = "'$grammar_before_mod'"]
+            //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
+    else
+        start=(`trparse *.g4 2> /dev/null | trxgrep '
+            /grammarSpec[grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text() = "'$grammar_before_mod'"]
+            //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
+    fi
     if [ ${#start[@]} -ne 1 ]; then
         echo "Start rule cannot be determined. ${start[@]}"
         exit 1
