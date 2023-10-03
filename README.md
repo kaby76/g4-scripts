@@ -11,12 +11,12 @@ for Antlr4 grammars.
 * [find-useless.sh](https://github.com/kaby76/g4-checks/blob/main/find-useless.sh) -- Find useless parentheses. 
 * [unused.sh](https://github.com/kaby76/g4-checks/blob/main/unused.sh) -- Find unused parser symbols.
 * [unused-lexer.sh](https://github.com/kaby76/g4-checks/blob/main/unused-lexer.sh) -- Find unused lexer symbols. 
-* [find-probs.sh](https://github.com/kaby76/g4-checks/blob/main/find-probs.sh) -- Find start-rule problems. 
 
 ### Grammar properties
+* [find-start.sh](https://github.com/kaby76/g4-checks/blob/main/find-start.sh) -- Find start-rule.
 * [all-rules.sh](https://github.com/kaby76/g4-checks/blob/main/all-rules.sh) -- Finds the transitive closure of a rule in a parser grammar.
-* [lcount.sh](https://github.com/kaby76/g4-checks/blob/main/lcount.sh) -- Count the number of lexer leaf nodes in a parse tree.
-* [pcount.sh](https://github.com/kaby76/g4-checks/blob/main/pcount.sh) -- Count the number of internal parse tree nodes in a parse tree.
+* [count-lexers.sh](https://github.com/kaby76/g4-checks/blob/main/count-lexers.sh) -- Count the number of lexer leaf nodes in a parse tree.
+* [count-parsers.sh](https://github.com/kaby76/g4-checks/blob/main/count-parsers.sh) -- Count the number of internal parse tree nodes in a parse tree.
 * [find-defs.sh](https://github.com/kaby76/g4-checks/blob/main/find-defs.sh) -- Finds all definitions of a symbol.
 * [find-refs.sh](https://github.com/kaby76/g4-checks/blob/main/find-refs.sh) -- Finds all references (applied and defining) of a symbol.
 * [find-actions.sh](https://github.com/kaby76/g4-checks/blob/main/find-actions.sh) -- Finds all actions in a grammar.
