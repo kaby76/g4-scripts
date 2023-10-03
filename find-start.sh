@@ -38,7 +38,7 @@ EOF
     esac
 done
 shift $((OPTIND - 1))
-files="$@"
+files=("$@")
 
 temp=`mktemp`
 if [ ${#files[@]} -gt 0 ]
@@ -48,20 +48,45 @@ else
     cat - > $temp
 fi
 
-count=`cat $temp | trxgrep ' //parserRuleSpec//alternative/element[.//TOKEN_REF/text()="EOF"]/following-sibling::element' | trtext -c`
-if [ "$count" != "0" ]
+count=(`cat $temp | trxgrep ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]//parserRuleSpec//alternative/element[.//TOKEN_REF/text()="EOF"]/following-sibling::element' | trtext -c`)
+if [ ${#count[@]} -gt 0 ]
 then
-    echo $i has an EOF usage followed by another element.
+	for i in ${count[@]}
+	do
+		echo $i | grep -e ':' > /dev/null 2>&1
+		if [ $? -eq 0 ]
+		then		
+			j=`echo $i | awk -F: '{print $2}'`
+		else
+			j=$i
+		fi
+		if [ "$j" != "0" ]
+		then
+		    echo $j has an EOF usage followed by another element.
+		fi
+	done
 fi
-
-count=`cat $temp | trxgrep ' //labeledAlt[.//TOKEN_REF/text()="EOF" and count(../labeledAlt) > 1]' | trtext -c`
-if [ "$count" != "0" ]
+count=`cat $temp | trxgrep ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]//labeledAlt[.//TOKEN_REF/text()="EOF" and count(../labeledAlt) > 1]' | trtext -c`
+if [ ${#count[@]} -gt 0 ]
 then
-    echo $i has an EOF in one alt, but not in another.
+	for i in ${count[@]}
+	do
+		echo $i | grep -e ':' > /dev/null 2>&1
+		if [ $? -eq 0 ]
+		then		
+			j=`echo $i | awk -F: '{print $2}'`
+		else
+			j=$i
+		fi
+		if [ "$j" != "0" ]
+		then
+		    echo $j has an EOF in one alt, but not in another.
+		fi
+	done
 fi
-
-start=(`trparse -- *.g4 2> /dev/null | trxgrep -- '
+start=(`cat $temp | trxgrep -- '
     /grammarSpec[grammarDecl[not(grammarType/LEXER)]]
     //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
 echo "Start rules:" 1>&2
 echo ${start[@]}
+rm -f $temp
