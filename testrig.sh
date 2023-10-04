@@ -1,7 +1,17 @@
 #
 
-while getopts 'xv:s:g:' opt; do
-    case "$opt" in
+#java org.antlr.v4.gui.TestRig GrammarName startRuleName
+#  [-tokens] [-tree] [-gui] [-ps file.ps] [-encoding encodingname]
+#  [-trace] [-diagnostics] [-SLL]
+#  [input-filename(s)]
+  
+while getopts 'xv:s:g:-:' OPT; do
+    if [ "$OPT" = "-" ]; then   # long option: reformulate OPT and OPTARG
+        OPT="${OPTARG%%=*}"       # extract long option name
+        OPTARG="${OPTARG#$OPT}"   # extract long option argument (may be empty)
+        OPTARG="${OPTARG#=}"      # if long option argument, remove assigning `=`
+    fi
+    case "$OPT" in
     g)
         grammar="${OPTARG}"
         ;;
@@ -14,6 +24,30 @@ while getopts 'xv:s:g:' opt; do
         ;;
     x)
         set -x
+        ;;
+    gui)
+        gui="-gui"
+        ;;
+    ps)
+        ps="-ps ${OPTARG}"
+        ;;
+    encoding)
+        encoding="-encoding ${OPTARG}"
+        ;;
+    trace)
+        trace="-trace"
+        ;;
+    diagnostics)
+        diagnostics="-diagnostics"
+        ;;
+    SLL)
+        SLL="-SLL"
+        ;;
+    tree)
+        tree="-tree"
+        ;;
+    tokens)
+        tokens="-tokens"
         ;;
     ?|h)
         cat - <<EOF
@@ -45,12 +79,39 @@ OPTIONS
     -x
         Execute "set -x" to debug script.
 
+    Options that are passed to the TestRig program:
+
+    --tokens
+        Print the tokens of the input.
+
+    --tree
+        Print "ToStringTree" of the parse tree.
+
+    --gui
+        Open a GUI drawing of the parse tree.
+
+    --ps file.ps
+        Write the drawing of the parse tree in PostScript to a file.
+
+    --encoding encodingname
+        Set the input file encoding.
+
+    --trace
+        Set trace on the parse.
+
+    --diagnostics
+        Set diagnostics on the parse.
+
+    --SLL
+        Set SLL on the parse.
+
+
 EXAMPLE USAGE
     git clone https://github.com/antlr/grammars-v4.git
     cd grammars-v4/abb
-    testrig examples/robdata.sys
+    testrig -gui examples/robdata.sys
     cd ../java/java20
-    cat examples/helloworld.java | testrig
+    cat examples/helloworld.java | testrig -gui
 
 EOF
         exit 0
@@ -185,8 +246,8 @@ then
 fi
 echo $start | grep -e ':' > /dev/null 2>&1
 if [ $? -eq 0 ]
-then		
-	start=`echo $start | awk -F: '{print $2}'`
+then        
+    start=`echo $start | awk -F: '{print $2}'`
 fi
 echo "Start $start"
 
@@ -233,8 +294,7 @@ fi
 $javac -cp ".$sep$a" *.java $morejava
 
 # Test.
-#$java -cp ".$sep$a""$sep""Java/" org.antlr.v4.gui.TestRig
-$java -cp ".$sep$a""$sep""Java/" org.antlr.v4.gui.TestRig $grammar $start -gui -tree $files
+$java -cp ".$sep$a""$sep""Java/" org.antlr.v4.gui.TestRig $grammar $start $tokens $tree $gui $ps $encoding $trace $diagnostics $SLL $files
 
 # Clean up.
 git clean -f .
