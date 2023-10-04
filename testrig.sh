@@ -64,15 +64,7 @@ assumptions_failed=0
 
 # git must be installed.
 # This is needed to clean up the mess created by this script.
-command -v git
-if [ $? -eq 1 ]; then
-    echo "git not installed. https://git-scm.com/"
-    assumptions_failed=1
-fi
-
-# git must be installed.
-# This is needed to clean up the mess created by this script.
-command -v git
+command -v git > /dev/null 2>&1
 if [ $? -eq 1 ]; then
     echo "git not installed. https://git-scm.com/"
     assumptions_failed=1
@@ -81,7 +73,7 @@ fi
 # Python must be installed.
 # It's required for antlr4 of the antlr4-tools, but we'll
 # test it here anyway.
-command -v python
+command -v python > /dev/null 2>&1
 if [ $? -eq 1 ]; then
     echo "Python is required."
     assumptions_failed=1
@@ -90,7 +82,7 @@ fi
 # antlr4 tool must be installed.
 # We use the antlr4-tools to run the Antlr4 tool,
 # and referemce on executing the java program.
-command -v antlr4
+command -v antlr4 > /dev/null 2>&1
 if [ $? -eq 1 ]; then
     echo "antlr4-tools not installed. https://github.com/antlr/antlr4-tools"
     assumptions_failed=1
@@ -99,7 +91,7 @@ fi
 # dotnet must be installed.
 # We need the Trash toolkit to extract the
 # start rule and grammar name from the grammar.
-command -v dotnet
+command -v dotnet > /dev/null 2>&1
 if [ $? -eq 1 ]; then
     echo "dotnet sdk not installed. https://dotnet.microsoft.com/en-us/"
     assumptions_failed=1
@@ -113,7 +105,7 @@ fi
 # a global install of the Trash toolkit. Let's test on
 # how to call the toolkit.
 local_kit=1
-dotnet tool restore | grep 'Cannot find a manifest file'
+dotnet tool restore | grep 'Cannot find a manifest file' > /dev/null 2>&1
 if [ $? -ne 1 ]
 then
     # Try global Trash toolkit.
@@ -156,12 +148,16 @@ if [ "$grammar" == "" ]
 then
     if [ $local_kit -eq 1 ]
     then
-        grammar_before_mod=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()'`)
+        grammar_before_mod=(`dotnet trparse -- -t ANTLRv4 *.g4 2> /dev/null | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()' | tr -d '\r'`)
     else
-        grammar_before_mod=(`trparse *.g4 2> /dev/null | trxgrep ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()'`)
+        grammar_before_mod=(`trparse -t ANTLRv4 *.g4 2> /dev/null | trxgrep ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text()' | tr -d '\r'`)
     fi
-    if [ ${#grammar_before_mod[@]} -ne 1 ]; then
-        echo "Grammar name cannot be determined. ${grammar[@]}"
+    if [ ${#grammar_before_mod[@]} -gt 1 ]; then
+        echo "Grammar name cannot be determined. Possible grammar names are: ${grammar_before_mod[@]}"
+        exit 1
+    fi
+    if [ ${#grammar_before_mod[@]} -eq 0 ]; then
+        echo "Grammar name cannot be determined."
         exit 1
     fi
     grammar=`echo -n $grammar_before_mod | sed 's/Parser$//'`
@@ -174,18 +170,23 @@ if [ "$start" == "" ]
 then
     if [ $local_kit -eq 1 ]
     then
-        start=(`dotnet trparse -- *.g4 2> /dev/null | dotnet trxgrep -- '
-            /grammarSpec[grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text() = "'$grammar_before_mod'"]
-            //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
+        start=(`dotnet trparse -- -t ANTLRv4 *.g4 2> /dev/null | dotnet trxgrep -- '
+            /grammarSpec[grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text() = "'$grammar'"]
+            //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF' | trtext | tr -d '\r'`)
     else
-        start=(`trparse *.g4 2> /dev/null | trxgrep '
-            /grammarSpec[grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text() = "'$grammar_before_mod'"]
-            //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
+        start=(`trparse -t ANTLRv4 *.g4 2> /dev/null | trxgrep '
+            /grammarSpec[grammarDecl[not(grammarType/LEXER)]/identifier/(TOKEN_REF | RULE_REF)/text() = "'$grammar'"]
+            //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF' | trtext | tr -d '\r'`)
     fi
     if [ ${#start[@]} -ne 1 ]; then
         echo "Start rule cannot be determined. ${start[@]}"
         exit 1
     fi
+fi
+echo $start | grep -e ':' > /dev/null 2>&1
+if [ $? -eq 0 ]
+then		
+	start=`echo $start | awk -F: '{print $2}'`
 fi
 echo "Start $start"
 
@@ -232,6 +233,7 @@ fi
 $javac -cp ".$sep$a" *.java $morejava
 
 # Test.
+#$java -cp ".$sep$a""$sep""Java/" org.antlr.v4.gui.TestRig
 $java -cp ".$sep$a""$sep""Java/" org.antlr.v4.gui.TestRig $grammar $start -gui -tree $files
 
 # Clean up.
