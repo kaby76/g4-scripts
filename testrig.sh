@@ -55,7 +55,9 @@ NAME
        testrig - test Antlr4 grammars using org.antlr.v4.gui.TestRig
 
 SYNOPSIS
-       $(basename $0) ([-g ... | -s ... | -v ... | -x ])* [test-file]
+       $(basename $0) ( -g ... | -s ... | -v ... | -x |
+			--tokens | --tree | --gui | --ps file.ps | --encoding encodingname |
+			--trace | --diagnostics | --SLL )* [test-file]
 
 DESCRIPTION
        Tests Antlr4 grammars. Assumes a standardized grammar start rule, combined
