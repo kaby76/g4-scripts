@@ -304,4 +304,4 @@ $java -cp ".$sep$a""$sep""Java/" org.antlr.v4.gui.TestRig $grammar $start $token
 #git clean -f . > /dev/null 2>&1
 
 rm -f `antlr4 -depend *.g4 | awk '{print $1}'`
-rm -f *.tokens *.interp *.class
+rm -f *.tokens *.interp *.class Java/*.class
