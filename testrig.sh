@@ -62,7 +62,7 @@ SYNOPSIS
 DESCRIPTION
        Tests Antlr4 grammars. Assumes a standardized grammar start rule, combined
        or split grammar, no preprocessor grammars. This script must be run under
-       Linux Bash or Windows MSYS2 Bash or . Requirements: dotnet, git, bash, OpenJDK,
+       Linux Bash or Windows MSYS2 Bash or . Requirements: dotnet, bash, OpenJDK,
        Python3, antlr4-tools. If the grammar is not in a clone of
        https://github.com/antlr/grammars-v4 then the Trash toolkit will also need to
        be installed. https://github.com/kaby76/Domemtech.Trash#installation
@@ -124,14 +124,6 @@ shift $((OPTIND - 1))
 files="$@"
 
 assumptions_failed=0
-
-# git must be installed.
-# This is needed to clean up the mess created by this script.
-command -v git > /dev/null 2>&1
-if [ $? -eq 1 ]; then
-    echo "git not installed. https://git-scm.com/"
-    assumptions_failed=1
-fi
 
 # Python must be installed.
 # It's required for antlr4 of the antlr4-tools, but we'll
@@ -299,9 +291,6 @@ $javac -cp ".$sep$a" *.java $morejava
 $java -cp ".$sep$a""$sep""Java/" org.antlr.v4.gui.TestRig $grammar $start $tokens $tree $gui $ps $encoding $trace $diagnostics $SLL $files
 
 # Clean up.
-
-# Warning, this cleans up too much!
-#git clean -f . > /dev/null 2>&1
 
 rm -f `antlr4 -depend *.g4 | awk '{print $1}'`
 rm -f *.tokens *.interp *.class Java/*.class
