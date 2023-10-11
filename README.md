@@ -4,7 +4,7 @@ This repo contains some useful [Trash](https://github.com/kaby76/Domemtech.Trash
 for Antlr4 grammars.
 
 ### Testing
-* [testrig.sh](https://github.com/kaby76/g4-checks/blob/main/testrig.sh) -- Runs the org.antlr.v4.gui.TestRig program on an input file.
+* [testrig.sh](https://github.com/kaby76/g4-checks/blob/main/testrig.sh) -- Wrapper script for the org.antlr.v4.gui.TestRig program that includes extraction of grammar name and start rule via Trash.
 * [find-cover.sh](https://github.com/kaby76/g4-checks/blob/main/find-cover.sh) -- Generate cover.html.
 
 ### Grammar linting
