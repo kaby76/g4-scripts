@@ -1,10 +1,12 @@
 #
 
-#java org.antlr.v4.gui.TestRig GrammarName startRuleName
-#  [-tokens] [-tree] [-gui] [-ps file.ps] [-encoding encodingname]
-#  [-trace] [-diagnostics] [-SLL]
-#  [input-filename(s)]
-  
+# This is a wrapper for TestRig. The options recognized here must be
+# updated if the options for TestRig are changed.
+# java org.antlr.v4.gui.TestRig GrammarName startRuleName
+#   [-tokens] [-tree] [-gui] [-ps file.ps] [-encoding encodingname]
+#   [-trace] [-diagnostics] [-SLL]
+#   [input-filename(s)]
+
 while getopts 'xv:s:g:-:' OPT; do
     if [ "$OPT" = "-" ]; then    # long option: reformulate OPT and OPTARG
         OPT="${OPTARG%%=*}"       # extract long option name
