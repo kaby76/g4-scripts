@@ -39,13 +39,9 @@ else
     cat - > $temp
 fi
 
-cat $temp | trxgrep ' //*[not(*)
-  and
-   count(ancestor::*)
-  =
-   max(//*[not(*)]/count(ancestor::*))
-   ]
-     /(self::node|..)
-' | trcaret
-
+# cat $temp | trxgrep ' //*[not(*) and count(ancestor::*) = max(//*[not(*)]/count(ancestor::*))]/(self::node|..)' | trcaret
+cat $temp | trxgrep ' for $i in max(//*[not(*)]/count(ancestor::*))
+    return
+	(for $j in (//*[not(*) and count(ancestor::*) = $i])
+	    return $j/(self::node|..))' | trcaret
 rm -f $temp
