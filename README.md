@@ -8,7 +8,7 @@ for Antlr4 grammars.
 * [find-cover.sh](https://github.com/kaby76/g4-checks/blob/main/find-cover.sh) -- Generate cover.html.
 
 ### Grammar linting
-* [find-useless.sh](https://github.com/kaby76/g4-checks/blob/main/find-useless.sh) -- Find useless parentheses. 
+* [find-useless-parentheses.sh](https://github.com/kaby76/g4-checks/blob/main/find-useless.sh) -- Find useless parentheses. 
 * [unused.sh](https://github.com/kaby76/g4-checks/blob/main/unused.sh) -- Find unused parser symbols.
 * [unused-lexer.sh](https://github.com/kaby76/g4-checks/blob/main/unused-lexer.sh) -- Find unused lexer symbols. 
 
@@ -22,6 +22,7 @@ for Antlr4 grammars.
 * [find-actions.sh](https://github.com/kaby76/g4-checks/blob/main/find-actions.sh) -- Finds all actions in a grammar.
 
 ### Grammar clean ups
+* [delete-useless-parentheses.sh](https://github.com/kaby76/g4-checks/blob/main/find-useless.sh) -- Delete useless parentheses. 
 * [remove-underscores-grammars.sh](https://github.com/kaby76/g4-checks/blob/main/remove-underscores-grammars.sh) -- Remove trailing underscores on symbols.
 * [strip-python.sh](https://github.com/kaby76/g4-checks/blob/main/strip-python.sh) -- Strip the python.gram file of attributes and other assorted junk.
 

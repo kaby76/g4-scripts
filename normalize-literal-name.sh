@@ -87,6 +87,6 @@ then
 	done
 	paste original_names.txt new_names.txt | tr -d '\r' | tr '\t' ',' > renames.txt
 	cat $temp | trrename -R renames.txt | trsponge -c
-#	$full_path_script_dir/delete-useless.sh $optx ${files[@]}
+	$full_path_script_dir/delete-useless-parentheses.sh $optx ${files[@]}
 fi
 rm -f renames.txt original_names.txt new_names.txt chars.txt $temp
