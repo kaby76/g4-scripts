@@ -77,14 +77,17 @@ cat $temp | trxgrep -e '
 	/TOKEN_REF
 	/text()' > original_names.txt
 
-if [ `wc -l original_names.txt | awk '{print $1}'` -eq `wc -l chars.txt | awk '{print $1}'` ]
+if [ `wc -l original_names.txt | awk '{print $1}'` -ne 0 ]
 then
-	rm -f new_names.txt
-	for i in `cat chars.txt | tr -d '\n' | od -t x1 | cut -c 8-`
-	do
-		name=`grep "^00${i^^}" $full_path_script_dir/UCD/NamesList.txt | cut -c 6- | sed 's/ /_/g' | sed 's/-/_/g'`
-		echo $name >> new_names.txt
-	done
+	if [ `wc -l original_names.txt | awk '{print $1}'` -eq `wc -l chars.txt | awk '{print $1}'` ]
+	then
+		rm -f new_names.txt
+		for i in `cat chars.txt | tr -d '\n' | od -t x1 | cut -c 8-`
+		do
+			name=`grep "^00${i^^}" $full_path_script_dir/UCD/NamesList.txt | cut -c 6- | sed 's/ /_/g' | sed 's/-/_/g'`
+			echo $name >> new_names.txt
+		done
+	fi
 	paste original_names.txt new_names.txt | tr -d '\r' | tr '\t' ',' > renames.txt
 	cat $temp | trrename -R renames.txt | trsponge -c
 	$full_path_script_dir/unfold-string-literals.sh $optx ${files[@]}
