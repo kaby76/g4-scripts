@@ -1,7 +1,11 @@
 #
 
-while getopts 'xh' opt; do
+test=0
+while getopts 'htx' opt; do
     case "$opt" in
+    t)
+        test=1
+        ;;
     x)
         set -x
         ;;
@@ -21,6 +25,8 @@ DESCRIPTION
 OPTIONS
     -h
         Output this help message.
+    -t
+        Test first and display using trcaret.
     -x
         Execute "set -x" to debug script.
 
@@ -42,12 +48,23 @@ temp=`mktemp`
 temp2=`mktemp`
 if [ ${#files[@]} -gt 0 ]
 then
-    trparse -t ANTLRv4 ${files[@]} > $temp
+    if [ $test -eq 1 ]
+    then
+        trparse -l -t ANTLRv4 ${files[@]} > $temp
+    else
+        trparse -t ANTLRv4 ${files[@]} > $temp
+    fi
 else
     cat - > $temp
 fi
 
-cat $temp | trquery delete '
+if [ $test -eq 0 ]
+then
+    command="trquery delete"
+else
+    command="trxgrep"
+fi
+cat $temp | $command '
         (: Find all blocks... :)
         //(block[
             (: except not one of these ... :)
@@ -74,11 +91,15 @@ cat $temp | trquery delete '
             not(./OR)
             ])/(LPAREN | RPAREN)' > $temp2
 
-if [ ${#files[@]} -gt 0 ]
+if [ $test -eq 0 ]
 then
-    cat $temp2 | trsponge -c
+	if [ ${#files[@]} -gt 0 ]
+	then
+	    cat $temp2 | trsponge -c
+	else
+	    cat $temp2 | trtext
+	fi
 else
-    cat $temp2 | trtext
+    cat $temp2 | trcaret
 fi
-	    
 rm -f $temp $temp2
