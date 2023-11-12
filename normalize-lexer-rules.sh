@@ -89,8 +89,20 @@ then
 		done
 	fi
 	paste original_names.txt new_names.txt | tr -d '\r' | tr '\t' ',' > renames.txt
+
+	echo ""
+	echo Renaming lexer symbols ...
 	cat $temp | trrename -R renames.txt | trsponge -c
+
+	echo ""
+	echo Unfold string literals into all parser rules ...
 	$full_path_script_dir/unfold-string-literals.sh $optx ${files[@]}
+
+	echo ""
+	echo Removing unused parentheses ...
 	$full_path_script_dir/delete-useless-parentheses.sh $optx ${files[@]}
+
+	echo ""
+	echo Done.
 fi
 rm -f renames.txt original_names.txt new_names.txt chars.txt $temp
