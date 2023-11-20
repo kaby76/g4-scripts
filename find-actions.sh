@@ -1,12 +1,10 @@
 #
 if [[ $# -gt 0 ]]
 then
-	echo Arguments were provided.
-	echo Finding unused parser symbols in grammars...
+	echo Finding actions in grammars... >&2
 	trparse -l -t ANTLRv4 $@ 2> /dev/null | trxgrep ' //actionBlock' | trcaret
 else
-	echo No arguments were provided.
-	echo Finding unused parser symbols in grammars...
+	echo Finding actions in grammars... >&2
 	for i in `find . -name desc.xml | grep -v Generated\*`
 	do
 		echo $i
