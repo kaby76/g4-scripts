@@ -2,7 +2,9 @@
 
 # This is a wrapper for TestRig that does some extra bookkeeping,
 # which TestRig does not do:
-#    * Allows one to use different version of Antlr4.
+#    * Allows one to use different version of Antlr4, automatically
+#      downloading the desired version. This script uses the
+#      antlr4-tools tool set.
 #    * Extracts the grammar name and start rule name from the grammar
 #      so you do not need to read the grammar to figure out these
 #      values. It does this using the Trash toolkit.
