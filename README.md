@@ -5,7 +5,7 @@ for Antlr4 grammars.
 
 ### Testing
 * [testrig.sh](https://github.com/kaby76/g4-checks/blob/main/testrig.sh) -- Script that simplifies running the org.antlr.v4.gui.TestRig program.
-* [find-cover.sh](https://github.com/kaby76/g4-checks/blob/main/find-cover.sh) -- Generate cover.html.
+* [find-cover.sh](https://github.com/kaby76/g4-checks/blob/main/find-cover.sh) -- Generate cover.html, which is a "heat map" of the grammar showing what rules were used in the parse.
 
 ### Grammar linting
 * [unused.sh](https://github.com/kaby76/g4-checks/blob/main/unused.sh) -- Find unused parser symbols.

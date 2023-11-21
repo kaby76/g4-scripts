@@ -1,7 +1,16 @@
 #
 
-# This is a wrapper for TestRig. The options recognized here must be
+# This is a wrapper for TestRig that does some extra bookkeeping,
+# which TestRig does not do:
+#    * Allows one to use different version of Antlr4.
+#    * Extracts the grammar name and start rule name from the grammar
+#      so you do not need to read the grammar to figure out these
+#      values. It does this using the Trash toolkit.
+#    * Runs the Antlr tool and compiles the generated Java code.
+# 
+# The options recognized here must be
 # updated if the options for TestRig are changed.
+# Here is what TestRig currently accepts.
 # java org.antlr.v4.gui.TestRig GrammarName startRuleName
 #   [-tokens] [-tree] [-gui] [-ps file.ps] [-encoding encodingname]
 #   [-trace] [-diagnostics] [-SLL]
@@ -58,13 +67,13 @@ NAME
 
 SYNOPSIS
        $(basename $0) ( -g ... | -s ... | -v ... | -x |
-			--tokens | --tree | --gui | --ps file.ps | --encoding encodingname |
-			--trace | --diagnostics | --SLL )* [test-file]
+                --tokens | --tree | --gui | --ps file.ps | --encoding encodingname |
+                --trace | --diagnostics | --SLL )* [test-file]
 
 DESCRIPTION
        Tests Antlr4 grammars. Assumes a standardized grammar start rule, combined
        or split grammar, no preprocessor grammars. This script must be run under
-       Linux Bash or Windows MSYS2 Bash or . Requirements: dotnet, bash, OpenJDK,
+       Linux Bash or Windows MSYS2 Bash. Requirements: dotnet, bash, OpenJDK,
        Python3, antlr4-tools. If the grammar is not in a clone of
        https://github.com/antlr/grammars-v4 then the Trash toolkit will also need to
        be installed. https://github.com/kaby76/Domemtech.Trash#installation
