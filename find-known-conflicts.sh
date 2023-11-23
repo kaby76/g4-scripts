@@ -30,6 +30,7 @@ main() {
 }
 
 dochecks() {
+    dochecks_antlr
     dochecks_csharp
     dochecks_cpp
     dochecks_dart
@@ -39,6 +40,14 @@ dochecks() {
     dochecks_php
     dochecks_python3
     dochecks_typescript
+}
+
+dochecks_antlr() {
+    echo "Antlr4 checks..."
+    cat o.pt | trxgrep '
+        //(RULE_REF|TOKEN_REF)[text() = (
+            "options"
+        ) and not(./parent::identifier/parent::optionValue) and not(./parent::identifier/parent::lexerCommandName)]' | trcaret
 }
 
 dochecks_csharp() {
@@ -122,7 +131,7 @@ dochecks_csharp() {
             "values",
             "void",
             "volatile",
-            "while"     
+            "while"
         ) and not(./parent::identifier/parent::optionValue) and not(./parent::identifier/parent::lexerCommandName)]' | trcaret
 }
 
