@@ -1,4 +1,6 @@
 #!/bin/bash
+found=0
+
 main() {
     if [[ $# -gt 0 ]]
     then
@@ -6,7 +8,6 @@ main() {
         if [ -f o.pt ] && [ -s o.pt ]
         then
             compute
-            rm -f o.pt
         fi
     else
         for i in `find . -name desc.xml | grep -v Generated\*`
@@ -21,7 +22,6 @@ main() {
                 if [ -f o.pt ] && [ -s o.pt ]
                 then
                     compute
-                    rm -f o.pt
                 fi
             fi
             popd > /dev/null 2>&1
@@ -30,6 +30,7 @@ main() {
 }
 
 compute() {
+    found=0
     cat o.pt | dotnet trxgrep -- '
         (: Find all blocks... :)
         //block[
@@ -61,9 +62,12 @@ compute() {
     if [ -s up-output.txt ]
     then
         echo Found useless parentheses in grammars...  1>&2
+	found=1
         cat up-output.txt 1>&2
     fi
     rm -f up-output.txt
+    rm -f o.pt
 }
 
 main $@
+exit $found
