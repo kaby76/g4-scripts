@@ -4,7 +4,7 @@ found=0
 main() {
     if [[ $# -gt 0 ]]
     then
-        dotnet trparse -- -l -t ANTLRv4 $@ > o.pt
+        trparse -- -l -t ANTLRv4 $@ > o.pt
         if [ -f o.pt ] && [ -s o.pt ]
         then
             compute
@@ -16,9 +16,9 @@ main() {
             pushd $d > /dev/null 2>&1
             if [ ! -z $(find . -maxdepth 1 -name '*.g4' -printf 1 -quit) ]
             then 
-                dotnet trparse -- -l -t ANTLRv4 *.g4 > o.pt
+                trparse -- -l -t ANTLRv4 *.g4 > o.pt
                 echo running parser and computing useless parentheses.
-                dotnet trparse -- -l -t ANTLRv4 *.g4 > o.pt
+                trparse -- -l -t ANTLRv4 *.g4 > o.pt
                 if [ -f o.pt ] && [ -s o.pt ]
                 then
                     compute
@@ -31,17 +31,24 @@ main() {
 
 compute() {
     found=0
-    cat o.pt | dotnet trxgrep -- '
+    cat o.pt | trxgrep -- '
         (: Find all blocks... :)
         //block[
             (: except not one of these ... :)
+
+	    (: do not flag "a ( b | c )* d" or with other operator :)
             not(./parent::ebnf/blockSuffix and ./altList/OR) and
+
             not(./parent::ebnf/blockSuffix and count(./altList/alternative/element) > 1) and
             not(./altList/OR and ../../following-sibling::element) and
             not(./altList/OR and ../../preceding-sibling::element) and
+
+	    (: do not flag "a ( v += b )* c" or with other operator :)
+	    not(./altList/alternative/element/labeledElement/(ASSIGN or PLUS_ASSIGN) and ./parent::ebnf/blockSuffix) and
+
             not(./parent::labeledElement/(ASSIGN or PLUS_ASSIGN))
-            ]' | dotnet trcaret -- -H > up-output.txt
-    cat o.pt | dotnet trxgrep -- '
+            ]' | trcaret -- -H > up-output.txt
+    cat o.pt | trxgrep -- '
         (: Find all blocks... :)
         //lexerBlock[
             (: except not one of these ... :)
@@ -52,13 +59,13 @@ compute() {
 (:          not(./parent::lexerElement/ebnfSuffix and ./lexerAltList/lexerAlt/lexerElements/lexerElement/lexerAtom/characterRange) and :)
             not(count(./lexerAltList/lexerAlt) > 1 and ../../../lexerCommands) and
             not(./parent::labeledLexerElement/(ASSIGN or PLUS_ASSIGN))
-            ]' | dotnet trcaret -- -H >> up-output.txt
-    cat o.pt | dotnet trxgrep -- '
+            ]' | trcaret -- -H >> up-output.txt
+    cat o.pt | trxgrep -- '
         (: Find all blockSets... :)
         //blockSet[
             (: except not one of these ... :)
             not(./OR)
-            ]' | dotnet trcaret -- -H >> up-output.txt
+            ]' | trcaret -- -H >> up-output.txt
     if [ -s up-output.txt ]
     then
         echo Found useless parentheses in grammars...  1>&2
