@@ -1,0 +1,24 @@
+delabel
+
+//labeledAlt/(POUND | identifier)
+//labeledLexerElement/(identifier | ASSIGN | PLUS_ASSIGN)
+//labeledElement/(identifier | ASSIGN | PLUS_ASSIGN)
+
+strip
+
+//DOC_COMMENT
+//labeledAlt/(POUND | identifier)
+//labeledLexerElement/(identifier | ASSIGN | PLUS_ASSIGN)
+//labeledElement/(identifier | ASSIGN | PLUS_ASSIGN)
+//rulePrequel
+//ruleReturns
+//exceptionGroup
+//throwsSpec
+//prequelConstruct
+//elementOptions
+//actionBlock
+//actionBlock with following '?'
+//argActionBlock
+
+(reformats)
+
