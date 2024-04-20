@@ -17,7 +17,7 @@ main() {
             if [ ! -z $(find . -maxdepth 1 -name '*.g4' -printf 1 -quit) ]
             then 
                 trparse -- -l -t ANTLRv4 *.g4 > o.pt
-                echo running parser and computing useless parentheses.
+                echo Computing useless parentheses in *.g4
                 trparse -- -l -t ANTLRv4 *.g4 > o.pt
                 if [ -f o.pt ] && [ -s o.pt ]
                 then
