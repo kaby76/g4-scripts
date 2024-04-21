@@ -1,0 +1,12 @@
+delete //DOC_COMMENT;
+delete //labeledAlt/(POUND | identifier);
+delete //labeledLexerElement/(identifier | ASSIGN | PLUS_ASSIGN);
+delete //labeledElement/(identifier | ASSIGN | PLUS_ASSIGN);
+delete //rulePrequel;
+delete //ruleReturns;
+delete //exceptionGroup;
+delete //throwsSpec;
+delete //prequelConstruct;
+delete //elementOptions;
+delete //actionBlock/(. | ./following-sibling::QUESTION[1]);
+delete //argActionBlock;
