@@ -1,7 +1,7 @@
-move //labeledAlt/(POUND | identifer)/@* ./ancestor::labeledAlt;
+move //labeledAlt/(POUND | identifer)/@WS ./ancestor::labeledAlt;
 delete //labeledAlt/(POUND | identifier);
 
-move //labeledLexerElement/(identifier | ASSIGN | PLUS_ASSIGN)/@* ./ancestor::labeledLexerElement;
+move //labeledLexerElement/(identifier | ASSIGN | PLUS_ASSIGN)/@WS ./ancestor::labeledLexerElement;
 delete //labeledLexerElement/(identifier | ASSIGN | PLUS_ASSIGN);
 
 move //labeledElement/identifier/@WS ./ancestor::labeledElement;
