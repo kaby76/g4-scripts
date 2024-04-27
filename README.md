@@ -8,8 +8,8 @@ for Antlr4 grammars.
 * [find-cover.sh](https://github.com/kaby76/g4-checks/blob/main/find-cover.sh) -- Generate cover.html, which is a "heat map" of the grammar showing what rules were used in the parse.
 
 ### Grammar linting
-* [unused.sh](https://github.com/kaby76/g4-checks/blob/main/unused.sh) -- Find unused parser symbols.
-* [unused-lexer.sh](https://github.com/kaby76/g4-checks/blob/main/unused-lexer.sh) -- Find unused lexer symbols. 
+* [find-unused-parser-symbols.sh](https://github.com/kaby76/g4-checks/blob/main/find-unused-parser-symbols.sh) -- Find unused parser symbols.
+* [find-unused-lexer-symbols.sh](https://github.com/kaby76/g4-checks/blob/main/find-unused-lexer-symbols.sh) -- Find unused lexer symbols. 
 
 ### Grammar properties
 * [find-start.sh](https://github.com/kaby76/g4-checks/blob/main/find-start.sh) -- Find start-rule.
@@ -24,6 +24,8 @@ for Antlr4 grammars.
 * [delete-useless-parentheses.sh](https://github.com/kaby76/g4-checks/blob/main/find-useless.sh) -- Find useless parentheses. Contains test option.
 * [remove-underscores-grammars.sh](https://github.com/kaby76/g4-checks/blob/main/remove-underscores-grammars.sh) -- Remove trailing underscores on symbols.
 * [strip-python.sh](https://github.com/kaby76/g4-checks/blob/main/strip-python.sh) -- Strip the python.gram file of attributes and other assorted junk.
+* [strip.xq](https://github.com/kaby76/g4-scripts/blob/main/strip.xq) -- trquery script to strip all junk from an Antlr4 grammar.
+* [delabel.xq](https://github.com/kaby76/g4-scripts/blob/main/delabel.xq) -- trquery script to "delabel" an Antlr4 grammar.
 
 ### Grammar conversion
-* [bison.sh](https://github.com/kaby76/g4-checks/blob/main/bison.sh) -- Convert Bison grammar to Antlr4.
+* [bison.sh](https://github.com/kaby76/g4-checks/blob/main/bison.sh) -- Convert Bison grammar to Antlr4. ___Not finished.___
