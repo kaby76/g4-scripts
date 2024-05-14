@@ -54,12 +54,12 @@ full_path_script_dir=`dirname $full_path_script`
 cat $temp | trxgrep -e '
 	//lexerRuleSpec
 	/lexerRuleBlock
-	/lexerAltList[not(OR)]
+ 	/lexerAltList[not(OR)]
         /lexerAlt[not(lexerCommands)]
 	/lexerElements[count(*)=1]
 	/lexerElement[not(ebnfSuffix)]
 	/lexerAtom
-	/terminal[not(elementOptions)]
+	/terminalDef[not(elementOptions)]
 	/STRING_LITERAL[string-length(.) < 4]
 	/text()' | sed "s/^'//" | sed "s/'$//" > chars.txt
 
@@ -72,7 +72,7 @@ cat $temp | trxgrep -e '
 	/lexerElements[count(*)=1]
 	/lexerElement[not(ebnfSuffix)]
 	/lexerAtom
-	/terminal[not(elementOptions)]
+	/terminalDef[not(elementOptions)]
 	/STRING_LITERAL[string-length(.) < 4]]
 	/TOKEN_REF
 	/text()' > original_names.txt

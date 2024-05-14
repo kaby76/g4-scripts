@@ -39,6 +39,9 @@ compute() {
 	    (: do not flag "a ( b | c )* d" or with other operator :)
             not(./parent::ebnf/blockSuffix and ./altList/OR) and
 
+	    (: do not flag "(a ( b | c )* )?" because it is not the same as the '*?'-operator. :)
+            not(./parent::ebnf/blockSuffix/ebnfSuffix/QUESTION and ./altList[count(./*) = 1]/alternative[count(./*) = 1]/element[count(./*) = 1]/ebnf[./block and ./blockSuffix/ebnfSuffix/*]) and
+
             not(./parent::ebnf/blockSuffix and count(./altList/alternative/element) > 1) and
             not(./altList/OR and ../../following-sibling::element) and
             not(./altList/OR and ../../preceding-sibling::element) and

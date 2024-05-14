@@ -1,0 +1,69 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dos2unix
+        run: |
+          sudo apt-get install tofrodos
+          sudo ln -s /usr/bin/fromdos /usr/bin/dos2unix
+
+      - name: Install Dotnet
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '8.0.x'
+      - name: Check Dotnet env
+        run: |
+          dotnet --version
+          dotnet --info
+          dotnet --list-runtimes
+          dotnet --list-sdks
+      - name: Install Trash
+        run: |
+            dotnet tool install -g trcaret
+            dotnet tool install -g trcombine
+            dotnet tool install -g trconvert
+            dotnet tool install -g trcover
+            dotnet tool install -g trfoldlit
+            dotnet tool install -g trgen
+            dotnet tool install -g trgenvsc
+            dotnet tool install -g trglob
+            dotnet tool install -g triconv
+            dotnet tool install -g trjson
+            dotnet tool install -g trparse
+            dotnet tool install -g trperf
+            dotnet tool install -g trrename
+            dotnet tool install -g trsplit
+            dotnet tool install -g trsponge
+            dotnet tool install -g trtext
+            dotnet tool install -g trtokens
+            dotnet tool install -g trtree
+            dotnet tool install -g trunfold
+            dotnet tool install -g trwdog
+            dotnet tool install -g trxgrep
+            dotnet tool install -g trxml
+            dotnet tool install -g trxml2
+      - name: Test
+        run: |
+          cd tests
+          bash test.sh
+
