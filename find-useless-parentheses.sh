@@ -36,18 +36,22 @@ compute() {
         //block[
             (: except not one of these ... :)
 
-	    (: do not flag "a ( b | c )* d" or with other operator :)
+            (: do not flag "a ( b | c )* d" or with other operator :)
             not(./parent::ebnf/blockSuffix and ./altList/OR) and
 
-	    (: do not flag "(a ( b | c )* )?" because it is not the same as the '*?'-operator. :)
+            (: do not flag "(a ( b | c )* )?" because it is not the same as the '*?'-operator. :)
             not(./parent::ebnf/blockSuffix/ebnfSuffix/QUESTION and ./altList[count(./*) = 1]/alternative[count(./*) = 1]/element[count(./*) = 1]/ebnf[./block and ./blockSuffix/ebnfSuffix/*]) and
 
+            (: do not flag blocks that contain a lot of elements like "(a b c)*" :)
             not(./parent::ebnf/blockSuffix and count(./altList/alternative/element) > 1) and
+
+            (: do not flag if there are alts *and* it is preceed or followed by an element,
+               e.g., "a (b | c d)" or "(a | b) c". :)
             not(./altList/OR and ../../following-sibling::element) and
             not(./altList/OR and ../../preceding-sibling::element) and
 
-	    (: do not flag "a ( v += b )* c" or with other operator :)
-	    not(./altList/alternative/element/labeledElement/(ASSIGN or PLUS_ASSIGN) and ./parent::ebnf/blockSuffix) and
+            (: do not flag "a ( v += b )* c" or with other operator :)
+            not(./altList/alternative/element/labeledElement/(ASSIGN or PLUS_ASSIGN) and ./parent::ebnf/blockSuffix) and
 
             not(./parent::labeledElement/(ASSIGN or PLUS_ASSIGN))
             ]' | trcaret -- -H > up-output.txt
@@ -72,7 +76,7 @@ compute() {
     if [ -s up-output.txt ]
     then
         echo Found useless parentheses in grammars...  1>&2
-	found=1
+        found=1
         cat up-output.txt 1>&2
     fi
     rm -f up-output.txt
