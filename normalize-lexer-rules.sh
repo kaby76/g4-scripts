@@ -30,7 +30,7 @@ EXAMPLE USAGE
     cd grammars-v4/abb
     $(basename $0) *.g4
     cd ../java/java20
-    trparse *.g4 | $(basename $0)
+    trparse -t ANTLRv4 *.g4 | $(basename $0)
 
 EOF
         exit 0
@@ -40,6 +40,34 @@ done
 shift $((OPTIND - 1))
 files=("$@")
 temp=`mktemp`
+
+
+# Determine if prerequisites are installed. Otherwise, output error and
+# exit.
+if ! command -v dotnet &> /dev/null
+then
+    echo "'dotnet' could not be found. Install Microsoft NET."
+    exit 1
+fi
+# ... referenced in this file.
+for tool in trparse trxgrep trrename trsponge
+do
+	if ! command -v $tool &> /dev/null
+	then
+	    echo "'$tool' could not be found. Install Trash Toolkit."
+	    exit 1
+	fi
+done
+# ... referenced elsewhere.
+for tool in trquery trunfold
+do
+	if ! command -v $tool &> /dev/null
+	then
+	    echo "'$tool' could not be found. Install Trash Toolkit."
+	    exit 1
+	fi
+done
+
 if [ ${#files[@]} -gt 0 ]
 then
     trparse -t ANTLRv4 ${files[@]} > $temp
@@ -50,6 +78,7 @@ fi
 # Get full path of this script.
 full_path_script=$(realpath $0)
 full_path_script_dir=`dirname $full_path_script`
+
 
 cat $temp | trxgrep -e '
 	//lexerRuleSpec
