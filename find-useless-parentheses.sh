@@ -31,31 +31,44 @@ main() {
 
 compute() {
     found=0
-    cat o.pt | trxgrep -- '
+    cat o.pt | trquery -- grep '
         (: Find all blocks... :)
         //block[
             (: except not one of these ... :)
 
             (: do not flag "a ( b | c )* d" or with other operator :)
-            not(./parent::ebnf/blockSuffix and ./altList/OR) and
+            not(./parent::ebnf/blockSuffix and ./altList/OR)
 
             (: do not flag "(a ( b | c )* )?" because it is not the same as the '*?'-operator. :)
-            not(./parent::ebnf/blockSuffix/ebnfSuffix/QUESTION and ./altList[count(./*) = 1]/alternative[count(./*) = 1]/element[count(./*) = 1]/ebnf[./block and ./blockSuffix/ebnfSuffix/*]) and
+            and not(./parent::ebnf/blockSuffix/ebnfSuffix/QUESTION and ./altList[count(./*) = 1]/alternative[count(./*) = 1]/element[count(./*) = 1]/ebnf[./block and ./blockSuffix/ebnfSuffix/*])
 
             (: do not flag blocks that contain a lot of elements like "(a b c)*" :)
-            not(./parent::ebnf/blockSuffix and count(./altList/alternative/element) > 1) and
+            and not(./parent::ebnf/blockSuffix and count(./altList/alternative/element) > 1)
 
             (: do not flag if there are alts *and* it is preceed or followed by an element,
                e.g., "a (b | c d)" or "(a | b) c". :)
-            not(./altList/OR and ../../following-sibling::element) and
-            not(./altList/OR and ../../preceding-sibling::element) and
+            and not(./altList/OR and ../../following-sibling::element)
+            and not(./altList/OR and ../../preceding-sibling::element)
 
             (: do not flag "a ( v += b )* c" or with other operator :)
-            not(./altList/alternative/element/labeledElement/(ASSIGN or PLUS_ASSIGN) and ./parent::ebnf/blockSuffix) and
+            and not(
+		(
+			(count(./altList/alternative/element/labeledElement/ASSIGN) > 0)
+			or
+			(count(./altList/alternative/element/labeledElement/PLUS_ASSIGN) > 0)
+		)
+		and (count(./parent::ebnf/blockSuffix) > 0)
+	    )
 
-            not(./parent::labeledElement/(ASSIGN or PLUS_ASSIGN))
+            and not(
+		(
+			(count(./parent::labeledElement/ASSIGN) > 0)
+			or
+			(count(./parent::labeledElement/PLUS_ASSIGN) > 0)
+		)
+	    )
             ]' | trcaret -- -H > up-output.txt
-    cat o.pt | trxgrep -- '
+    cat o.pt | trquery -- grep '
         (: Find all blocks... :)
         //lexerBlock[
             (: except not one of these ... :)
@@ -67,7 +80,7 @@ compute() {
             not(count(./lexerAltList/lexerAlt) > 1 and ../../../lexerCommands) and
             not(./parent::labeledLexerElement/(ASSIGN or PLUS_ASSIGN))
             ]' | trcaret -- -H >> up-output.txt
-    cat o.pt | trxgrep -- '
+    cat o.pt | trquery -- grep '
         (: Find all blockSets... :)
         //blockSet[
             (: except not one of these ... :)
