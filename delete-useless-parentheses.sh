@@ -35,7 +35,7 @@ EXAMPLE USAGE
     cd grammars-v4/abb
     $(basename $0) *.g4
     cd ../java/java20
-    trparse *.g4 | $(basename $0)
+    dotnet trparse -- *.g4 | $(basename $0)
 
 EOF
         exit 0
@@ -50,9 +50,9 @@ if [ ${#files[@]} -gt 0 ]
 then
     if [ $test -eq 1 ]
     then
-        trparse -l -t ANTLRv4 ${files[@]} > $temp
+        dotnet trparse -- -l -t ANTLRv4 ${files[@]} > $temp
     else
-        trparse -t ANTLRv4 ${files[@]} > $temp
+        dotnet trparse -- -t ANTLRv4 ${files[@]} > $temp
     fi
 else
     cat - > $temp
@@ -60,9 +60,9 @@ fi
 
 if [ $test -eq 0 ]
 then
-    command="trquery delete"
+    command="dotnet trquery -- delete "
 else
-    command="trxgrep"
+    command="dotnet trxgrep -- "
 fi
 cat $temp | $command '
         (: Find all blocks... :)
@@ -70,23 +70,36 @@ cat $temp | $command '
             (: except not one of these ... :)
 
             (: do not flag "a ( b | c )* d" or with other operator :)
-            not(./parent::ebnf/blockSuffix and ./altList/OR) and
+            not(./parent::ebnf/blockSuffix and ./altList/OR)
 
             (: do not flag "(a ( b | c )* )?" because it is not the same as the '*?'-operator. :)
-            not(./parent::ebnf/blockSuffix/ebnfSuffix/QUESTION and ./altList[count(./*) = 1]/alternative[count(./*) = 1]/element[count(./*) = 1]/ebnf[./block and ./blockSuffix/ebnfSuffix/*]) and
+            and not(./parent::ebnf/blockSuffix/ebnfSuffix/QUESTION and ./altList[count(./*) = 1]/alternative[count(./*) = 1]/element[count(./*) = 1]/ebnf[./block and ./blockSuffix/ebnfSuffix/*])
 
             (: do not flag blocks that contain a lot of elements like "(a b c)*" :)
-            not(./parent::ebnf/blockSuffix and count(./altList/alternative/element) > 1) and
+            and not(./parent::ebnf/blockSuffix and count(./altList/alternative/element) > 1)
 
             (: do not flag if there are alts *and* it is preceed or followed by an element,
                e.g., "a (b | c d)" or "(a | b) c". :)
-            not(./altList/OR and ../../following-sibling::element) and
-            not(./altList/OR and ../../preceding-sibling::element) and
+            and not(./altList/OR and ../../following-sibling::element)
+            and not(./altList/OR and ../../preceding-sibling::element)
 
             (: do not flag "a ( v += b )* c" or with other operator :)
-            not(./altList/alternative/element/labeledElement/(ASSIGN or PLUS_ASSIGN) and ./parent::ebnf/blockSuffix) and
+            and not(
+		(
+			(count(./altList/alternative/element/labeledElement/ASSIGN) > 0)
+			or
+			(count(./altList/alternative/element/labeledElement/PLUS_ASSIGN) > 0)
+		)
+		and (count(./parent::ebnf/blockSuffix) > 0)
+	    )
 
-            not(./parent::labeledElement/(ASSIGN or PLUS_ASSIGN))
+            and not(
+		(
+			(count(./parent::labeledElement/ASSIGN) > 0)
+			or
+			(count(./parent::labeledElement/PLUS_ASSIGN) > 0)
+		)
+	    )
             ]
 	|
         lexerBlock[

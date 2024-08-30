@@ -4,7 +4,7 @@ found=0
 main() {
     if [[ $# -gt 0 ]]
     then
-        trparse -- -l -t ANTLRv4 $@ > o.pt
+        dotnet trparse -- -l -t ANTLRv4 $@ > o.pt
         if [ -f o.pt ] && [ -s o.pt ]
         then
             compute
@@ -16,9 +16,9 @@ main() {
             pushd $d > /dev/null 2>&1
             if [ ! -z $(find . -maxdepth 1 -name '*.g4' -printf 1 -quit) ]
             then 
-                trparse -- -l -t ANTLRv4 *.g4 > o.pt
+                dotnet trparse -- -l -t ANTLRv4 *.g4 > o.pt
                 echo Computing useless parentheses in *.g4
-                trparse -- -l -t ANTLRv4 *.g4 > o.pt
+                dotnet trparse -- -l -t ANTLRv4 *.g4 > o.pt
                 if [ -f o.pt ] && [ -s o.pt ]
                 then
                     compute
@@ -31,7 +31,7 @@ main() {
 
 compute() {
     found=0
-    cat o.pt | trquery -- grep '
+    cat o.pt | dotnet trquery -- grep '
         (: Find all blocks... :)
         //block[
             (: except not one of these ... :)
@@ -67,8 +67,8 @@ compute() {
 			(count(./parent::labeledElement/PLUS_ASSIGN) > 0)
 		)
 	    )
-            ]' | trcaret -- -H > up-output.txt
-    cat o.pt | trquery -- grep '
+            ]' | dotnet trcaret -- -H > up-output.txt
+    cat o.pt | dotnet trquery -- grep '
         (: Find all blocks... :)
         //lexerBlock[
             (: except not one of these ... :)
@@ -79,13 +79,13 @@ compute() {
 (:          not(./parent::lexerElement/ebnfSuffix and ./lexerAltList/lexerAlt/lexerElements/lexerElement/lexerAtom/characterRange) and :)
             not(count(./lexerAltList/lexerAlt) > 1 and ../../../lexerCommands) and
             not(./parent::labeledLexerElement/(ASSIGN or PLUS_ASSIGN))
-            ]' | trcaret -- -H >> up-output.txt
-    cat o.pt | trquery -- grep '
+            ]' | dotnet trcaret -- -H >> up-output.txt
+    cat o.pt | dotnet trquery -- grep '
         (: Find all blockSets... :)
         //blockSet[
             (: except not one of these ... :)
             not(./OR)
-            ]' | trcaret -- -H >> up-output.txt
+            ]' | dotnet trcaret -- -H >> up-output.txt
     if [ -s up-output.txt ]
     then
         echo Found useless parentheses in grammars...  1>&2
