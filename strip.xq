@@ -1,4 +1,6 @@
 delete //DOC_COMMENT;
+delete //@BLOCK_COMMENT;
+delete //@LINE_COMMENT;
 
 move //labeledAlt/(POUND | identifer)/@WS ./ancestor::labeledAlt;
 delete //labeledAlt/(POUND | identifier);
@@ -13,7 +15,7 @@ delete //rulePrequel;
 delete //ruleReturns;
 delete //exceptionGroup;
 delete //throwsSpec;
-(% delete //prequelConstruct; %)
+(: delete //prequelConstruct; :)
 delete //elementOptions;
 
 move //actionBlock/@WS[1] ../..;
@@ -21,3 +23,5 @@ delete //actionBlock/(. | ./following-sibling::QUESTION[1]);
 
 move //argActionBlock/@WS[1] ../..;
 delete //argActionBlock;
+
+delete //action_;

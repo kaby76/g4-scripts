@@ -8,15 +8,15 @@ then
 	cp $@ foobarfoobar
 	cd foobarfoobar
 	echo 1st pass: fold string literals in parser rules to make explicit lexer rule used.
-	trparse *.g4 2> /dev/null | trfoldlit | trsponge -c true 2> /dev/null
+	dotnet trparse -- *.g4 2> /dev/null | dotnet trfoldlit | dotnet trsponge -- -c true 2> /dev/null
 	echo 2nd pass: find unreferenced lexer rule symbols.
-	trparse *.g4 2> /dev/null | \
-		trxgrep ' //lexerRuleSpec[
+	dotnet trparse -- *.g4 2> /dev/null | \
+		dotnet trxgrep -- ' //lexerRuleSpec[
 			not(doc("*")//ruleBlock//TOKEN_REF/text() = ./TOKEN_REF/text())
 			and not(doc("*")//lexerRuleBlock//TOKEN_REF/text() = ./TOKEN_REF/text())
 			and not(./lexerRuleBlock//lexerCommands)
 			]/TOKEN_REF' | \
-		trtext
+		dotnet trtext
 	cd ..
 	rm -rf foobarfoobar
 else
@@ -33,15 +33,15 @@ else
 		cp *.g4 foobarfoobar
 		cd foobarfoobar
 		echo 1st pass: fold string literals in parser rules to make explicit lexer rule used.
-		trparse *.g4 2> /dev/null | trfoldlit | trsponge -c true 2> /dev/null
+		dotnet trparse -- *.g4 2> /dev/null | dotnet trfoldlit | dotnet trsponge -- -c true 2> /dev/null
 		echo 2nd pass: find unreferenced lexer rule symbols.
-		trparse *.g4 2> /dev/null | \
-			trxgrep ' //lexerRuleSpec[
+		dotnet trparse -- *.g4 2> /dev/null | \
+			dotnet trxgrep -- ' //lexerRuleSpec[
 			not(doc("*")//ruleBlock//TOKEN_REF/text() = ./TOKEN_REF/text())
 			and not(doc("*")//lexerRuleBlock//TOKEN_REF/text() = ./TOKEN_REF/text())
 			and not(./lexerRuleBlock//lexerCommands)
 			]/TOKEN_REF' | \
-		trtext
+		dotnet trtext
 		cd ..
 		rm -rf foobarfoobar
 		popd > /dev/null 2>&1

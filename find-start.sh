@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+#set -x
 
 while getopts 'xv:s:g:' opt; do
     case "$opt" in
@@ -43,12 +44,12 @@ files=("$@")
 temp=`mktemp`
 if [ ${#files[@]} -gt 0 ]
 then
-    trparse -t ANTLRv4 ${files[@]} > $temp
+    dotnet trparse -- -t ANTLRv4 ${files[@]} > $temp
 else
     cat - > $temp
 fi
 
-count=(`cat $temp | trxgrep ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]//parserRuleSpec//alternative/element[.//TOKEN_REF/text()="EOF"]/following-sibling::element' | trtext -c`)
+count=(`cat $temp | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]//parserRuleSpec//alternative/element[.//TOKEN_REF/text()="EOF"]/following-sibling::element' | dotnet trtext -- -c`)
 if [ ${#count[@]} -gt 0 ]
 then
 	for i in ${count[@]}
@@ -66,7 +67,7 @@ then
 		fi
 	done
 fi
-count=`cat $temp | trxgrep ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]//labeledAlt[.//TOKEN_REF/text()="EOF" and count(../labeledAlt) > 1]' | trtext -c`
+count=`cat $temp | dotnet trxgrep -- ' //grammarSpec/grammarDecl[not(grammarType/LEXER)]//labeledAlt[.//TOKEN_REF/text()="EOF" and count(../labeledAlt) > 1]' | dotnet trtext -- -c`
 if [ ${#count[@]} -gt 0 ]
 then
 	for i in ${count[@]}
@@ -84,7 +85,7 @@ then
 		fi
 	done
 fi
-start=(`cat $temp | trxgrep -- '
+start=(`cat $temp | dotnet trxgrep -- -e '
     /grammarSpec[grammarDecl[not(grammarType/LEXER)]]
     //parserRuleSpec[ruleBlock//TOKEN_REF/text()="EOF"]/RULE_REF/text()' | tr -d '\r'`)
 echo "Start rules:" 1>&2
