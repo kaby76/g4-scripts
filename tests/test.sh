@@ -8,6 +8,7 @@ cd "$where"
 echo "$where"
 cd "$where"
 failed=0
+dotnet tool restore
 for t in grammars/*.g4
 do
 	bash ../find-useless-parentheses.sh $t
