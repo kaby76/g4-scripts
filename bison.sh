@@ -2,12 +2,5 @@
 
 if [[ $# -gt 0 ]]
 then
-	trparse $@ 2> /dev/null | \
-		trquery '
-			delete //input_/prologue_declarations;
-			delete //input_/PercentPercent;
-			delete //input_/epilogue_opt;
-			delete //BRACED_CODE;
-			delete //actionBlock;
-			delete //epilogue_opt;'
+	dotnet trparse -t Bison $@ 2> /dev/null | dotnet trquery 'delete //(input_/(prologue_declarations | PercentPercent | epilogue_opt) | BRACED_CODE | actionBlock | epilogue_opt);' | dotnet trsponge -c
 fi
