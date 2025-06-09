@@ -21,34 +21,13 @@ then
     exit 1
 fi
 
-while getopts 'a:b:' opt; do
-    case "$opt" in
-        a)
-            after="${OPTARG}"
-            ;;
-        b)
-            before="${OPTARG}"
-            ;;
-    esac
-done
-
-if [ "$after" == "" ]
-then
-    echo "'after' not set."
-    exit 1
-fi
-if [ "$before" == "" ]
-then
-    echo "'before' not set."
-    exit 1
-fi
 
 #############################
 #############################
 # Get last commit/pr. Note, some of the PR merges don't
 # fit the pattern, but we'll ignore them. Get "prior" commit before all these
 # changes.
-prs=( After Before )
+prs=( PT O )
 com=( $after $before )
 echo PRS = ${prs[@]}
 echo COM = ${com[@]}
@@ -78,10 +57,10 @@ rm -f $cwd/xx.m
 echo "pkg load statistics" >> $cwd/xx.m
 for ((i=0; i<${#prs[@]}; i++))
 do
-xxx=${prs[$i]}
-g=${com[$i]}
-echo xxx $xxx
-echo $g $g
+	xxx=${prs[$i]}
+	g=${com[$i]}
+	echo xxx $xxx
+	echo $g $g
 	echo "p$i=["`cat "$cwd/$xxx.txt"`"];" >> $cwd/xx.m
 	echo "mp$i=mean(p$i);" >> $cwd/xx.m
 	echo "sd$i=std(p$i);" >> $cwd/xx.m
